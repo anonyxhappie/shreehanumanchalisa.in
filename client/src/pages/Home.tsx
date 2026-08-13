@@ -3,12 +3,29 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Bookmark, ChevronDown, Copy, Languages, Minus, Music2, Pause, Play, Plus, Share2, SkipBack, SkipForward, Sparkles, Square, Volume2 } from "lucide-react";
 import { toast } from "sonner";
 import { verses, verseCount } from "@/lib/hanumanChalisa";
+import { marathiMeanings } from "@/lib/marathiChalisa";
 import Sanscript from "@indic-transliteration/sanscript";
+
+const audioSources: Record<string, string> = {
+  hi: "/manus-storage/hanuman-chalisa-hindi-recitation_b8328401.wav",
+  roman: "/manus-storage/hanuman-chalisa-hindi-recitation_b8328401.wav",
+  en: "/manus-storage/hanuman-chalisa-en_0b71ab25.wav",
+  mr: "/manus-storage/hanuman-chalisa-mr_3eaadefe.wav",
+  bn: "/manus-storage/hanuman-chalisa-bn_4a4c9bfc.wav",
+  ta: "/manus-storage/hanuman-chalisa-ta_7dfe3e37.wav",
+  te: "/manus-storage/hanuman-chalisa-te_1a4acd67.wav",
+  gu: "/manus-storage/hanuman-chalisa-gu_0052d312.wav",
+  kn: "/manus-storage/hanuman-chalisa-kn_27ff336b.wav",
+  ml: "/manus-storage/hanuman-chalisa-ml_ccbab005.wav",
+  pa: "/manus-storage/hanuman-chalisa-pa_ad42022d.wav",
+};
+
+const audioDurations: Record<string, number> = { hi: 269.48, roman: 269.48, en: 257.92, mr: 262.4, bn: 289.4, ta: 326.08, te: 319.68, gu: 226.92, kn: 222.64, ml: 311.12, pa: 239.24 };
 
 const languages = [
   { id: "hi", label: "हिन्दी", native: "देवनागरी", note: "मूल पाठ" },
   { id: "en", label: "English", native: "Latin", note: "Translation" },
-  { id: "mr", label: "मराठी", native: "देवनागरी", note: "Regional script" },
+  { id: "mr", label: "मराठी", native: "देवनागरी", note: "Marathi meaning" },
   { id: "bn", label: "বাংলা", native: "বাংলা", note: "Regional script" },
   { id: "ta", label: "தமிழ்", native: "தமிழ்", note: "Regional script" },
   { id: "te", label: "తెలుగు", native: "తెలుగు", note: "Regional script" },
@@ -30,12 +47,14 @@ export default function Home() {
   const [audioRate, setAudioRate] = useState(1);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [audioTime, setAudioTime] = useState(0);
-  const [audioDuration, setAudioDuration] = useState(269.48);
+  const [audioDuration, setAudioDuration] = useState(audioDurations.hi);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const activeLanguage = languages.find((item) => item.id === language) ?? languages[0];
+  const audioSrc = audioSources[language] ?? audioSources.hi;
 
   const getText = (verse: typeof verses[number]) => {
     if (language === "en") return verse.en;
+    if (language === "mr") return marathiMeanings[verses.indexOf(verse)] ?? verse.hi;
     if (language === "roman") return verse.roman;
     const schemes: Record<string, string> = { bn: "bengali", ta: "tamil", te: "telugu", gu: "gujarati", kn: "kannada", ml: "malayalam", pa: "gurmukhi" };
     return schemes[language] ? Sanscript.t(verse.hi, "devanagari", schemes[language]) : verse.hi;
@@ -43,29 +62,18 @@ export default function Home() {
 
   const displayVerses = useMemo(() => verses, []);
 
-  const segmentDurations = [96.84, 81.08, 42.72, 36.8, 12.04];
-  const segmentStarts = [0, 14, 28, 36, 42];
+  const getVerseWeights = () => verses.map((verse, index) => Math.max((language === "mr" ? (marathiMeanings[index] ?? verse.hi) : language === "en" ? verse.en : verse.hi).replace(/\s/g, "").length, 1));
 
   const getVerseIndexAtTime = (time: number) => {
-    let segment = 0;
-    let elapsed = 0;
-    for (let i = 0; i < segmentDurations.length; i += 1) {
-      if (time >= elapsed + segmentDurations[i] && i < segmentDurations.length - 1) elapsed += segmentDurations[i];
-      else { segment = i; break; }
-    }
-    const start = segmentStarts[segment];
-    const end = segment === segmentStarts.length - 1 ? verses.length : segmentStarts[segment + 1];
-    const segmentTime = Math.max(0, time - elapsed);
-    const entries = verses.slice(start, end);
-    const weights = entries.map((verse) => Math.max(verse.hi.replace(/\s/g, "").length, 1));
+    const weights = getVerseWeights();
     const totalWeight = weights.reduce((sum, weight) => sum + weight, 0);
+    const target = Math.min(audioDuration, Math.max(0, time)) / Math.max(audioDuration, 1) * totalWeight;
     let cursor = 0;
-    for (let i = 0; i < weights.length; i += 1) {
-      const next = cursor + (weights[i] / totalWeight) * segmentDurations[segment];
-      if (segmentTime <= next || i === weights.length - 1) return start + i;
-      cursor = next;
+    for (let index = 0; index < weights.length; index += 1) {
+      cursor += weights[index];
+      if (target <= cursor || index === weights.length - 1) return index;
     }
-    return start;
+    return 0;
   };
 
   const onAudioTimeUpdate = () => {
@@ -78,7 +86,7 @@ export default function Home() {
   const togglePlayback = () => {
     const audio = audioRef.current;
     if (!audio) return;
-    if (audio.paused) audio.play().catch(() => toast("Tap play again to begin the Hindi recitation."));
+    if (audio.paused) audio.play().catch(() => toast(`Tap play again to begin the ${activeLanguage.label} recitation.`));
     else audio.pause();
   };
 
@@ -93,15 +101,10 @@ export default function Home() {
 
   const moveAudio = (direction: number) => {
     const next = Math.min(verses.length - 1, Math.max(0, audioIndex + direction));
-    const segment = segmentStarts.reduce((acc, start, index) => start <= next ? index : acc, 0);
-    const start = segmentStarts[segment];
-    const end = segment === segmentStarts.length - 1 ? verses.length : segmentStarts[segment + 1];
-    const entries = verses.slice(start, end);
-    const weights = entries.map((verse) => Math.max(verse.hi.replace(/\s/g, "").length, 1));
+    const weights = getVerseWeights();
     const totalWeight = weights.reduce((sum, weight) => sum + weight, 0);
-    const offset = weights.slice(0, next - start).reduce((sum, weight) => sum + weight, 0);
-    const before = segmentDurations.slice(0, segment).reduce((sum, duration) => sum + duration, 0);
-    const target = before + (offset / totalWeight) * segmentDurations[segment] + 0.05;
+    const offset = weights.slice(0, next).reduce((sum, weight) => sum + weight, 0);
+    const target = (offset / totalWeight) * audioDuration + 0.05;
     if (audioRef.current) { audioRef.current.currentTime = target; audioRef.current.play().catch(() => undefined); }
     setAudioIndex(next);
   };
@@ -117,6 +120,18 @@ export default function Home() {
     audio.addEventListener("ended", onEnded);
     return () => { audio.removeEventListener("play", onPlay); audio.removeEventListener("pause", onPause); audio.removeEventListener("ended", onEnded); };
   }, []);
+
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    audio.pause();
+    audio.currentTime = 0;
+    setAudioTime(0);
+    setAudioIndex(0);
+    setIsSpeaking(false);
+    setAudioDuration(audioDurations[language] ?? audioDurations.hi);
+    audio.load();
+  }, [language]);
 
   useEffect(() => {
     const active = document.querySelector(`[data-verse-index="${audioIndex}"]`);
@@ -167,14 +182,14 @@ export default function Home() {
           <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-[#f4efe5] to-transparent opacity-80" />
         </section>
 
-        <section id="read" className="mx-auto max-w-7xl px-5 py-14 lg:px-10 lg:py-20"><audio ref={audioRef} src="/manus-storage/hanuman-chalisa-hindi-recitation_b8328401.wav" preload="metadata" onTimeUpdate={onAudioTimeUpdate} onLoadedMetadata={(event) => setAudioDuration(event.currentTarget.duration)} />
-          <div className="mb-10 flex flex-col justify-between gap-6 border-b border-[#d7caba] pb-8 sm:flex-row sm:items-end"><div><div className="mb-3 flex items-center gap-3 text-[#b45a31]"><span className="text-lg">✦</span><span className="text-xs font-bold uppercase tracking-[0.28em]">The reading desk</span></div><h2 className="font-serif text-4xl font-semibold tracking-[-0.03em] text-[#243b49] sm:text-5xl">Hanuman Chalisa</h2><p className="mt-2 text-sm text-[#6d787a]">{activeLanguage.note} · {verseCount} chaupais</p>{!['hi','en','roman'].includes(language) && <p className="mt-2 max-w-xl text-xs leading-5 text-[#9a8f82]">This edition keeps the complete canonical text while the regional-script translation is being editorially verified. Source edition: Vaidika Vignanam.</p>}</div><div className="flex flex-wrap items-center gap-2"><button onClick={() => setShowMeaning((value) => !value)} aria-pressed={showMeaning} className={`rounded-full border px-3 py-2 text-xs font-bold transition ${showMeaning ? "border-[#d96b2b] bg-[#f1e2d3] text-[#994321]" : "border-[#cdbda9] bg-[#fffaf1] text-[#49616a] hover:border-[#d96b2b] hover:text-[#a94725]"}`}>Meaning {showMeaning ? "on" : "off"}</button><button onClick={() => setFontSize(Math.max(.88, fontSize - .08))} aria-label="Decrease text size" className="grid h-9 w-9 place-items-center rounded-full border border-[#cdbda9] bg-[#fffaf1] text-[#49616a] transition hover:border-[#d96b2b] hover:text-[#a94725]"><Minus className="h-4 w-4" /></button><span className="min-w-12 text-center text-xs font-bold text-[#6d787a]">Aa</span><button onClick={() => setFontSize(Math.min(1.22, fontSize + .08))} aria-label="Increase text size" className="grid h-9 w-9 place-items-center rounded-full border border-[#cdbda9] bg-[#fffaf1] text-[#49616a] transition hover:border-[#d96b2b] hover:text-[#a94725]"><Plus className="h-4 w-4" /></button><button onClick={copyPage} aria-label="Copy Hindi text" className="ml-2 grid h-9 w-9 place-items-center rounded-full border border-[#cdbda9] bg-[#fffaf1] text-[#49616a] transition hover:border-[#d96b2b] hover:text-[#a94725]"><Copy className="h-4 w-4" /></button></div></div>
+        <section id="read" className="mx-auto max-w-7xl px-5 py-14 lg:px-10 lg:py-20"><audio ref={audioRef} src={audioSrc} preload="metadata" onTimeUpdate={onAudioTimeUpdate} onLoadedMetadata={(event) => setAudioDuration(Number.isFinite(event.currentTarget.duration) ? event.currentTarget.duration : (audioDurations[language] ?? audioDurations.hi))} />
+          <div className="mb-10 flex flex-col justify-between gap-6 border-b border-[#d7caba] pb-8 sm:flex-row sm:items-end"><div><div className="mb-3 flex items-center gap-3 text-[#b45a31]"><span className="text-lg">✦</span><span className="text-xs font-bold uppercase tracking-[0.28em]">The reading desk</span></div><h2 className="font-serif text-4xl font-semibold tracking-[-0.03em] text-[#243b49] sm:text-5xl">Hanuman Chalisa</h2><p className="mt-2 text-sm text-[#6d787a]">{activeLanguage.note} · {verseCount} chaupais</p>{!['hi','en','roman','mr'].includes(language) && <p className="mt-2 max-w-xl text-xs leading-5 text-[#9a8f82]">This edition keeps the complete canonical Hanuman Chalisa in the selected script. The audio is a dedicated regional-language recitation; semantic translations are being editorially verified.</p>}{language === 'mr' && <p className="mt-2 max-w-xl text-xs leading-5 text-[#9a8f82]">This is a dedicated Marathi meaning edition, cross-checked against Marathi devotional sources.</p>}</div><div className="flex flex-wrap items-center gap-2"><button onClick={() => setShowMeaning((value) => !value)} aria-pressed={showMeaning} className={`rounded-full border px-3 py-2 text-xs font-bold transition ${showMeaning ? "border-[#d96b2b] bg-[#f1e2d3] text-[#994321]" : "border-[#cdbda9] bg-[#fffaf1] text-[#49616a] hover:border-[#d96b2b] hover:text-[#a94725]"}`}>Meaning {showMeaning ? "on" : "off"}</button><button onClick={() => setFontSize(Math.max(.88, fontSize - .08))} aria-label="Decrease text size" className="grid h-9 w-9 place-items-center rounded-full border border-[#cdbda9] bg-[#fffaf1] text-[#49616a] transition hover:border-[#d96b2b] hover:text-[#a94725]"><Minus className="h-4 w-4" /></button><span className="min-w-12 text-center text-xs font-bold text-[#6d787a]">Aa</span><button onClick={() => setFontSize(Math.min(1.22, fontSize + .08))} aria-label="Increase text size" className="grid h-9 w-9 place-items-center rounded-full border border-[#cdbda9] bg-[#fffaf1] text-[#49616a] transition hover:border-[#d96b2b] hover:text-[#a94725]"><Plus className="h-4 w-4" /></button><button onClick={copyPage} aria-label="Copy Hindi text" className="ml-2 grid h-9 w-9 place-items-center rounded-full border border-[#cdbda9] bg-[#fffaf1] text-[#49616a] transition hover:border-[#d96b2b] hover:text-[#a94725]"><Copy className="h-4 w-4" /></button></div></div>
           <div className="grid gap-12 lg:grid-cols-[minmax(0,1fr)_280px]">
             <div className="max-w-3xl">
-              {displayVerses.map((verse, index) => <article key={index} data-verse-index={index} className={`group relative border-b border-[#dfd2c2] py-7 first:pt-0 ${index === 0 || index === displayVerses.length - 1 ? "bg-[#fbf7ef]/45" : ""} ${isSpeaking && audioIndex === index && language === "hi" ? "bg-[#f3dfcb]/70" : ""}`}><div className="flex gap-5"><span className="mt-1 w-8 shrink-0 font-serif text-sm font-bold text-[#b87452]">{verse.n}</span><div className="min-w-0 flex-1"><p style={{ fontSize: `${fontSize}rem` }} className={`whitespace-pre-line font-serif leading-[1.8] ${language === "hi" || language === "roman" ? "text-[#203c4d]" : "text-[#344c58]"}`}>{getText(verse)}</p>{language === "hi" && <p className="mt-3 whitespace-pre-line text-xs leading-6 text-[#9a8f82]">{verse.roman}</p>}{showMeaning && <p className="mt-4 max-w-2xl border-l-2 border-[#d96b2b]/55 pl-4 text-sm leading-6 text-[#667477]"><span className="mb-1 block text-[10px] font-bold uppercase tracking-[0.18em] text-[#b87452]">Meaning</span>{verse.en}</p>}</div><button onClick={() => toggleSaved(index)} aria-label={saved.includes(index) ? "Remove bookmark" : "Save verse"} className={`mt-1 grid h-8 w-8 shrink-0 place-items-center rounded-full transition ${saved.includes(index) ? "bg-[#f1d4bd] text-[#a94725]" : "text-[#bcae9d] opacity-0 group-hover:opacity-100 hover:bg-[#f1e4d7] hover:text-[#a94725]"}`}><Bookmark className="h-4 w-4" fill={saved.includes(index) ? "currentColor" : "none"} /></button></div></article>)}
+              {displayVerses.map((verse, index) => <article key={index} data-verse-index={index} className={`group relative border-b border-[#dfd2c2] py-7 first:pt-0 ${index === 0 || index === displayVerses.length - 1 ? "bg-[#fbf7ef]/45" : ""} ${isSpeaking && audioIndex === index ? "bg-[#f3dfcb]/70" : ""}`}><div className="flex gap-5"><span className="mt-1 w-8 shrink-0 font-serif text-sm font-bold text-[#b87452]">{verse.n}</span><div className="min-w-0 flex-1"><p style={{ fontSize: `${fontSize}rem` }} className={`whitespace-pre-line font-serif leading-[1.8] ${language === "hi" || language === "roman" ? "text-[#203c4d]" : "text-[#344c58]"}`}>{getText(verse)}</p>{language === "hi" && <p className="mt-3 whitespace-pre-line text-xs leading-6 text-[#9a8f82]">{verse.roman}</p>}{showMeaning && <p className="mt-4 max-w-2xl border-l-2 border-[#d96b2b]/55 pl-4 text-sm leading-6 text-[#667477]"><span className="mb-1 block text-[10px] font-bold uppercase tracking-[0.18em] text-[#b87452]">Meaning</span>{verse.en}</p>}</div><button onClick={() => toggleSaved(index)} aria-label={saved.includes(index) ? "Remove bookmark" : "Save verse"} className={`mt-1 grid h-8 w-8 shrink-0 place-items-center rounded-full transition ${saved.includes(index) ? "bg-[#f1d4bd] text-[#a94725]" : "text-[#bcae9d] opacity-0 group-hover:opacity-100 hover:bg-[#f1e4d7] hover:text-[#a94725]"}`}><Bookmark className="h-4 w-4" fill={saved.includes(index) ? "currentColor" : "none"} /></button></div></article>)}
             </div>
             <aside className="h-fit lg:sticky lg:top-8">
-              <div className="border-y border-[#d8c7b4] bg-[#fffaf1]/70 p-6"><p className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#b45a31]">A small ritual</p><div className="mt-5 border-y border-[#e0d1bf] py-4"><div className="flex items-center justify-between"><span className="text-xs font-bold uppercase tracking-[0.16em] text-[#6c787a]">Hindi recitation</span><span className="font-serif text-sm text-[#b45a31]">{audioIndex === 0 ? "Opening doha" : audioIndex <= 40 ? `Verse ${audioIndex}` : "Closing doha"}</span></div><div className="mt-4 flex items-center gap-2"><button onClick={() => moveAudio(-1)} aria-label="Previous verse" className="grid h-8 w-8 place-items-center rounded-full border border-[#cdbda9] text-[#49616a] transition hover:border-[#d96b2b] hover:text-[#a94725]"><SkipBack className="h-3.5 w-3.5" /></button><button onClick={togglePlayback} aria-label={isSpeaking ? "Pause recitation" : "Play recitation"} className="grid h-10 w-10 place-items-center rounded-full bg-[#d96b2b] text-[#fffaf1] shadow-[0_6px_16px_rgba(217,107,43,0.22)] transition hover:bg-[#e27b3a] active:scale-[0.96]">{isSpeaking ? <Pause className="h-4 w-4" /> : <Play className="ml-0.5 h-4 w-4" />}</button><button onClick={stopPlayback} aria-label="Stop recitation" className="grid h-8 w-8 place-items-center rounded-full border border-[#cdbda9] text-[#49616a] transition hover:border-[#d96b2b] hover:text-[#a94725]"><Square className="h-3 w-3" fill="currentColor" /></button><button onClick={() => moveAudio(1)} aria-label="Next verse" className="ml-auto grid h-8 w-8 place-items-center rounded-full border border-[#cdbda9] text-[#49616a] transition hover:border-[#d96b2b] hover:text-[#a94725]"><SkipForward className="h-3.5 w-3.5" /></button></div><div className="mt-4 h-1 overflow-hidden rounded-full bg-[#e8ddcf]"><div className="h-full bg-[#d96b2b] transition-[width] duration-200" style={{ width: `${Math.min(100, (audioTime / audioDuration) * 100)}%` }} /></div><div className="mt-3 flex items-center justify-between"><span className="text-[11px] text-[#9a8f82]">Verse {Math.min(audioIndex + 1, verses.length)} of {verses.length}</span><select value={audioRate} onChange={(event) => { const rate = Number(event.target.value); setAudioRate(rate); if (audioRef.current) audioRef.current.playbackRate = rate; }} aria-label="Playback speed" className="bg-transparent text-[11px] font-bold text-[#a94725] outline-none"><option value={0.8}>0.8×</option><option value={1}>1×</option><option value={1.2}>1.2×</option></select></div></div><h3 className="mt-3 font-serif text-2xl font-semibold text-[#294454]">Read it your way.</h3><p className="mt-3 text-sm leading-6 text-[#6c787a]">Choose a script, settle into the rhythm, and let the words take their own time.</p><div className="mt-6 space-y-3"><button onClick={togglePlayback} className="flex w-full items-center justify-between rounded-2xl bg-[#f1e2d3] px-4 py-3 text-left text-sm font-semibold text-[#994321] transition hover:bg-[#ecd5c2]"><span className="flex items-center gap-3"><Music2 className="h-4 w-4" /> {isSpeaking ? "Pause audio" : "Listen softly"}</span><span className="text-xs text-[#b4775a]">Recorded</span></button><button onClick={() => toast(saved.length ? `${saved.length} verse${saved.length > 1 ? "s" : ""} saved.` : "Tap a bookmark beside any verse to save it.")} className="flex w-full items-center justify-between rounded-2xl border border-[#ddcdbb] px-4 py-3 text-left text-sm font-semibold text-[#4b6067] transition hover:border-[#d96b2b] hover:text-[#a94725]"><span className="flex items-center gap-3"><Bookmark className="h-4 w-4" /> Quiet shelf</span><span className="text-xs text-[#9b8e81]">{saved.length}</span></button></div></div>
+              <div className="border-y border-[#d8c7b4] bg-[#fffaf1]/70 p-6"><p className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#b45a31]">A small ritual</p><div className="mt-5 border-y border-[#e0d1bf] py-4"><div className="flex items-center justify-between"><span className="text-xs font-bold uppercase tracking-[0.16em] text-[#6c787a]">{activeLanguage.label} recitation</span><span className="font-serif text-sm text-[#b45a31]">{audioIndex === 0 ? "Opening doha" : audioIndex <= 40 ? `Verse ${audioIndex}` : "Closing doha"}</span></div><div className="mt-4 flex items-center gap-2"><button onClick={() => moveAudio(-1)} aria-label="Previous verse" className="grid h-8 w-8 place-items-center rounded-full border border-[#cdbda9] text-[#49616a] transition hover:border-[#d96b2b] hover:text-[#a94725]"><SkipBack className="h-3.5 w-3.5" /></button><button onClick={togglePlayback} aria-label={isSpeaking ? "Pause recitation" : "Play recitation"} className="grid h-10 w-10 place-items-center rounded-full bg-[#d96b2b] text-[#fffaf1] shadow-[0_6px_16px_rgba(217,107,43,0.22)] transition hover:bg-[#e27b3a] active:scale-[0.96]">{isSpeaking ? <Pause className="h-4 w-4" /> : <Play className="ml-0.5 h-4 w-4" />}</button><button onClick={stopPlayback} aria-label="Stop recitation" className="grid h-8 w-8 place-items-center rounded-full border border-[#cdbda9] text-[#49616a] transition hover:border-[#d96b2b] hover:text-[#a94725]"><Square className="h-3 w-3" fill="currentColor" /></button><button onClick={() => moveAudio(1)} aria-label="Next verse" className="ml-auto grid h-8 w-8 place-items-center rounded-full border border-[#cdbda9] text-[#49616a] transition hover:border-[#d96b2b] hover:text-[#a94725]"><SkipForward className="h-3.5 w-3.5" /></button></div><div className="mt-4 h-1 overflow-hidden rounded-full bg-[#e8ddcf]"><div className="h-full bg-[#d96b2b] transition-[width] duration-200" style={{ width: `${Math.min(100, (audioTime / audioDuration) * 100)}%` }} /></div><div className="mt-3 flex items-center justify-between"><span className="text-[11px] text-[#9a8f82]">Verse {Math.min(audioIndex + 1, verses.length)} of {verses.length}</span><select value={audioRate} onChange={(event) => { const rate = Number(event.target.value); setAudioRate(rate); if (audioRef.current) audioRef.current.playbackRate = rate; }} aria-label="Playback speed" className="bg-transparent text-[11px] font-bold text-[#a94725] outline-none"><option value={0.8}>0.8×</option><option value={1}>1×</option><option value={1.2}>1.2×</option></select></div></div><h3 className="mt-3 font-serif text-2xl font-semibold text-[#294454]">Read it your way.</h3><p className="mt-3 text-sm leading-6 text-[#6c787a]">Choose a script, settle into the rhythm, and let the words take their own time.</p><div className="mt-6 space-y-3"><button onClick={togglePlayback} className="flex w-full items-center justify-between rounded-2xl bg-[#f1e2d3] px-4 py-3 text-left text-sm font-semibold text-[#994321] transition hover:bg-[#ecd5c2]"><span className="flex items-center gap-3"><Music2 className="h-4 w-4" /> {isSpeaking ? "Pause audio" : "Listen softly"}</span><span className="text-xs text-[#b4775a]">Recorded</span></button><button onClick={() => toast(saved.length ? `${saved.length} verse${saved.length > 1 ? "s" : ""} saved.` : "Tap a bookmark beside any verse to save it.")} className="flex w-full items-center justify-between rounded-2xl border border-[#ddcdbb] px-4 py-3 text-left text-sm font-semibold text-[#4b6067] transition hover:border-[#d96b2b] hover:text-[#a94725]"><span className="flex items-center gap-3"><Bookmark className="h-4 w-4" /> Quiet shelf</span><span className="text-xs text-[#9b8e81]">{saved.length}</span></button></div></div>
               <div className="relative mt-7 border-l-2 border-[#d96b2b] pl-5 before:absolute before:-left-[7px] before:-top-1 before:h-3 before:w-3 before:rounded-full before:border-2 before:border-[#f4efe5] before:bg-[#d96b2b]"><p className="font-serif text-lg italic leading-7 text-[#5b676a]">“जहाँ सुमिरन करि हनुमत, मंगल होय अपार।”</p><p className="mt-3 text-xs font-semibold uppercase tracking-[0.18em] text-[#aa765a]">Remembering brings auspiciousness</p></div>
             </aside>
           </div>

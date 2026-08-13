@@ -34,3 +34,13 @@
 - [x] Keep the meaning visible under the active synchronized verse without disrupting highlighting.
 - [x] Verify responsive layout, type-check, production build, and preview.
 - [ ] Save a delivery checkpoint.
+
+## Multilingual audio and Marathi correction
+
+- [x] Audit the current supported-language content and audio model.
+- [x] Verify Marathi against an authoritative Marathi translation and document the finding.
+- [x] Obtain or generate high-quality audio for English, Marathi, Bengali, Tamil, Telugu, Gujarati, Kannada, Malayalam, Punjabi, and Romanized Hindi where appropriate.
+- [x] Assemble timestamp metadata for each language edition.
+- [x] Integrate language-aware audio selection and synchronized verse highlighting.
+- [x] Verify language switching, audio controls, build, and preview.
+- [ ] Save a delivery checkpoint.
