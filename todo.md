@@ -26,3 +26,11 @@
 - [x] Replace SpeechSynthesis with an HTML audio element and timestamp-driven synchronization.
 - [x] Verify seek, pause, speed, end-of-track, and verse highlighting behavior.
 - [ ] Save a delivery checkpoint.
+
+## English meaning toggle
+
+- [x] Add a reading-desk toggle for showing or hiding English meanings.
+- [x] Render each English meaning directly below its Hindi verse.
+- [x] Keep the meaning visible under the active synchronized verse without disrupting highlighting.
+- [x] Verify responsive layout, type-check, production build, and preview.
+- [ ] Save a delivery checkpoint.
