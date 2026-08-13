@@ -30,7 +30,7 @@ jobs:
         run: pnpm install --frozen-lockfile
       - name: Build site
         env:
-          VITE_BASE: /shreehanumanchalisa.in/
+          VITE_BASE: /
         run: pnpm exec vite build
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
