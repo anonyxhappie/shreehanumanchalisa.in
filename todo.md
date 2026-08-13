@@ -17,3 +17,12 @@
 - [x] Handle browser speech-synthesis availability and cancellation safely.
 - [x] Verify the player with type-check, production build, and preview capture.
 - [ ] Save a delivery checkpoint.
+
+## Recorded Hindi recitation replacement
+
+- [x] Confirm the source or generation route for a high-quality Hindi recording.
+- [x] Create or obtain the audio file and timestamp metadata for all verses.
+- [x] Store the audio asset using the web project media workflow.
+- [x] Replace SpeechSynthesis with an HTML audio element and timestamp-driven synchronization.
+- [x] Verify seek, pause, speed, end-of-track, and verse highlighting behavior.
+- [ ] Save a delivery checkpoint.
