@@ -7,17 +7,17 @@ import { marathiMeanings } from "@/lib/marathiChalisa";
 import Sanscript from "@indic-transliteration/sanscript";
 
 const audioSources: Record<string, string> = {
-  hi: "/manus-storage/hanuman-chalisa-hindi-recitation_b8328401.wav",
-  roman: "/manus-storage/hanuman-chalisa-hindi-recitation_b8328401.wav",
-  en: "/manus-storage/hanuman-chalisa-en_0b71ab25.wav",
-  mr: "/manus-storage/hanuman-chalisa-mr_3eaadefe.wav",
-  bn: "/manus-storage/hanuman-chalisa-bn_4a4c9bfc.wav",
-  ta: "/manus-storage/hanuman-chalisa-ta_7dfe3e37.wav",
-  te: "/manus-storage/hanuman-chalisa-te_1a4acd67.wav",
-  gu: "/manus-storage/hanuman-chalisa-gu_0052d312.wav",
-  kn: "/manus-storage/hanuman-chalisa-kn_27ff336b.wav",
-  ml: "/manus-storage/hanuman-chalisa-ml_ccbab005.wav",
-  pa: "/manus-storage/hanuman-chalisa-pa_ad42022d.wav",
+  hi: "/media/hanuman-chalisa-hindi-recitation.mp3",
+  roman: "/media/hanuman-chalisa-hindi-recitation.mp3",
+  en: "/media/hanuman-chalisa-en.mp3",
+  mr: "/media/hanuman-chalisa-mr.mp3",
+  bn: "/media/hanuman-chalisa-bn.mp3",
+  ta: "/media/hanuman-chalisa-ta.mp3",
+  te: "/media/hanuman-chalisa-te.mp3",
+  gu: "/media/hanuman-chalisa-gu.mp3",
+  kn: "/media/hanuman-chalisa-kn.mp3",
+  ml: "/media/hanuman-chalisa-ml.mp3",
+  pa: "/media/hanuman-chalisa-pa.mp3",
 };
 
 const audioDurations: Record<string, number> = { hi: 269.48, roman: 269.48, en: 257.92, mr: 262.4, bn: 289.4, ta: 326.08, te: 319.68, gu: 226.92, kn: 222.64, ml: 311.12, pa: 239.24 };
@@ -152,7 +152,7 @@ export default function Home() {
       <header className="relative z-20 border-b border-[#d9cbb8]/70 bg-[#f8f4eb]/90 backdrop-blur-xl">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-4 lg:px-10">
           <a href="#top" className="group flex items-center gap-3" aria-label="Hanuman Chalisa home">
-            <span className="relative grid h-11 w-11 place-items-center overflow-hidden rounded-full border border-[#d96b2b]/35 bg-[#fff9ee] shadow-[0_6px_18px_rgba(119,70,37,0.08)]"><img src="/manus-storage/hanuman-mark_da3fe331.png" alt="Chalisa emblem" className="h-8 w-8 object-contain" />
+            <span className="relative grid h-11 w-11 place-items-center overflow-hidden rounded-full border border-[#d96b2b]/35 bg-[#fff9ee] shadow-[0_6px_18px_rgba(119,70,37,0.08)]"><img src="/media/hanuman-mark.png" alt="Chalisa emblem" className="h-8 w-8 object-contain" />
               
               
             </span>
@@ -167,7 +167,7 @@ export default function Home() {
 
       <main id="top">
         <section className="relative overflow-hidden border-b border-[#d9cbb8] bg-[#f4efe5] text-[#243b49]">
-          <div className="absolute inset-0 bg-[url('/manus-storage/hanuman-hero_0796f0c9.png')] bg-cover bg-center opacity-35 mix-blend-multiply" />
+          <div className="absolute inset-0 bg-[url('/media/hanuman-hero.png')] bg-cover bg-center opacity-35 mix-blend-multiply" />
           <div className="absolute inset-0 bg-gradient-to-r from-[#f4efe5]/95 via-[#f4efe5]/55 to-transparent" />
           <div className="relative mx-auto grid min-h-[550px] max-w-7xl items-center px-5 py-20 lg:grid-cols-[1.05fr_0.95fr] lg:px-10 lg:py-28">
             <div className="max-w-xl animate-[rise_700ms_cubic-bezier(.23,1,.32,1)_both]">
@@ -195,7 +195,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section id="about" className="border-t border-[#d9cbb8] bg-[#ece3d5] px-5 py-16 lg:px-10"><div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[1fr_1.2fr] lg:items-center"><div className="overflow-hidden rounded-[2rem] bg-[#3c3030] shadow-[0_20px_60px_rgba(87,53,30,0.14)]"><img src="/manus-storage/hanuman-meditation_48d74d5b.png" alt="A devotional illustration of Hanuman in prayer" className="h-full w-full object-cover" /></div><div className="max-w-xl"><p className="text-[10px] font-bold uppercase tracking-[0.28em] text-[#b45a31]">About this prayer</p><h2 className="mt-4 font-serif text-4xl font-semibold leading-tight text-[#263f4d]">A prayer carried<br /><em className="font-normal text-[#ad512a]">across generations.</em></h2><p className="mt-5 text-base leading-8 text-[#627176]">The Hanuman Chalisa is a devotional hymn of forty verses in praise of Hanuman. This small reading space is made for returning: before the day begins, after it ends, or whenever a steady word is needed.</p><div className="mt-7 flex flex-wrap gap-3"><span className="rounded-full border border-[#cdbda9] bg-[#f6eee4] px-4 py-2 text-xs font-bold text-[#5e6c6d]">Hindi first</span><span className="rounded-full border border-[#cdbda9] bg-[#f6eee4] px-4 py-2 text-xs font-bold text-[#5e6c6d]">11 languages</span><span className="rounded-full border border-[#cdbda9] bg-[#f6eee4] px-4 py-2 text-xs font-bold text-[#5e6c6d]">Made for quiet reading</span></div></div></div></section>
+        <section id="about" className="border-t border-[#d9cbb8] bg-[#ece3d5] px-5 py-16 lg:px-10"><div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[1fr_1.2fr] lg:items-center"><div className="overflow-hidden rounded-[2rem] bg-[#3c3030] shadow-[0_20px_60px_rgba(87,53,30,0.14)]"><img src="/media/hanuman-meditation.png" alt="A devotional illustration of Hanuman in prayer" className="h-full w-full object-cover" /></div><div className="max-w-xl"><p className="text-[10px] font-bold uppercase tracking-[0.28em] text-[#b45a31]">About this prayer</p><h2 className="mt-4 font-serif text-4xl font-semibold leading-tight text-[#263f4d]">A prayer carried<br /><em className="font-normal text-[#ad512a]">across generations.</em></h2><p className="mt-5 text-base leading-8 text-[#627176]">The Hanuman Chalisa is a devotional hymn of forty verses in praise of Hanuman. This small reading space is made for returning: before the day begins, after it ends, or whenever a steady word is needed.</p><div className="mt-7 flex flex-wrap gap-3"><span className="rounded-full border border-[#cdbda9] bg-[#f6eee4] px-4 py-2 text-xs font-bold text-[#5e6c6d]">Hindi first</span><span className="rounded-full border border-[#cdbda9] bg-[#f6eee4] px-4 py-2 text-xs font-bold text-[#5e6c6d]">11 languages</span><span className="rounded-full border border-[#cdbda9] bg-[#f6eee4] px-4 py-2 text-xs font-bold text-[#5e6c6d]">Made for quiet reading</span></div></div></div></section>
       </main>
       <footer className="border-t border-[#d9cbb8] bg-[#f8f4eb] px-5 py-8 lg:px-10"><div className="mx-auto flex max-w-7xl flex-col justify-between gap-4 text-xs text-[#7f8580] sm:flex-row sm:items-center"><p>श्री हनुमते नमः · With reverence, for every home.</p><div className="flex items-center gap-5"><button onClick={() => toast("Share link copied soon.")} className="inline-flex items-center gap-2 hover:text-[#a94725]"><Share2 className="h-3.5 w-3.5" /> Share</button><span>Chalisa · 2026</span></div></div></footer>
     </div>
