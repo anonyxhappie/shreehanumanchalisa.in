@@ -8,3 +8,12 @@
 - [x] Update the language selector and reading count to reflect complete content.
 - [x] Run type-check, production build, and content integrity checks.
 - [ ] Save a delivery checkpoint and report remaining limitations, if any.
+
+## Hindi synchronized audio player
+
+- [x] Define the browser playback and verse synchronization behavior.
+- [x] Implement play, pause, stop, speed, progress, and previous/next controls.
+- [x] Highlight the active Hindi verse and scroll it into view during playback.
+- [x] Handle browser speech-synthesis availability and cancellation safely.
+- [x] Verify the player with type-check, production build, and preview capture.
+- [ ] Save a delivery checkpoint.
