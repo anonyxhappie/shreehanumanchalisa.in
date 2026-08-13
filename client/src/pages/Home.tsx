@@ -2,35 +2,21 @@
 import { useMemo, useState } from "react";
 import { Bookmark, ChevronDown, Copy, Languages, Minus, Music2, Play, Plus, Share2, Sparkles, Volume2 } from "lucide-react";
 import { toast } from "sonner";
+import { verses, verseCount } from "@/lib/hanumanChalisa";
+import Sanscript from "@indic-transliteration/sanscript";
 
 const languages = [
   { id: "hi", label: "हिन्दी", native: "देवनागरी", note: "मूल पाठ" },
   { id: "en", label: "English", native: "Latin", note: "Translation" },
-  { id: "mr", label: "मराठी", native: "देवनागरी", note: "मराठी" },
-  { id: "bn", label: "বাংলা", native: "বাংলা", note: "বাংলা" },
-  { id: "ta", label: "தமிழ்", native: "தமிழ்", note: "தமிழ்" },
-  { id: "te", label: "తెలుగు", native: "తెలుగు", note: "తెలుగు" },
-  { id: "gu", label: "ગુજરાતી", native: "ગુજરાતી", note: "ગુજરાતી" },
-  { id: "kn", label: "ಕನ್ನಡ", native: "ಕನ್ನಡ", note: "ಕನ್ನಡ" },
-  { id: "ml", label: "മലയാളം", native: "മലയാളം", note: "മലയാളം" },
-  { id: "pa", label: "ਪੰਜਾਬੀ", native: "ਗੁਰਮੁਖੀ", note: "ਪੰਜਾਬੀ" },
+  { id: "mr", label: "मराठी", native: "देवनागरी", note: "Regional script" },
+  { id: "bn", label: "বাংলা", native: "বাংলা", note: "Regional script" },
+  { id: "ta", label: "தமிழ்", native: "தமிழ்", note: "Regional script" },
+  { id: "te", label: "తెలుగు", native: "తెలుగు", note: "Regional script" },
+  { id: "gu", label: "ગુજરાતી", native: "ગુજરાતી", note: "Regional script" },
+  { id: "kn", label: "ಕನ್ನಡ", native: "ಕನ್ನಡ", note: "Regional script" },
+  { id: "ml", label: "മലയാളം", native: "മലയാളം", note: "Regional script" },
+  { id: "pa", label: "ਪੰਜਾਬੀ", native: "ਗੁਰਮੁਖੀ", note: "Regional script" },
   { id: "roman", label: "Romanized", native: "Latin", note: "उच्चारण" },
-];
-
-const verses = [
-  { n: "॥ दोहा ॥", hi: "श्रीगुरु चरन सरोज रज, निज मनु मुकुरु सुधारि।\nबरनऊँ रघुबर बिमल जसु, जो दायकु फल चारि॥", en: "I cleanse the mirror of my mind with the dust of my teacher's lotus feet, and sing the pure glory of Lord Rama, giver of the four fruits of life.", roman: "Shri guru charan saroja raja, nija manu mukuru sudhari.\nBaranau Raghubar bimala jasu, jo dayaku phala chari." },
-  { n: "१", hi: "जय हनुमान ज्ञान गुन सागर।\nजय कपीस तिहुँ लोक उजागर॥", en: "Victory to Hanuman, ocean of wisdom and virtue. Victory to the lord of monkeys, illumining the three worlds.", roman: "Jai Hanuman gyan gun sagar.\nJai Kapis tihun lok ujagar." },
-  { n: "२", hi: "राम दूत अतुलित बल धामा।\nअंजनि-पुत्र पवनसुत नामा॥", en: "You are Rama's messenger, the abode of incomparable strength, known as Anjani's son and the son of the Wind.", roman: "Ram doot atulit bal dhama.\nAnjani-putra Pavan-sut nama." },
-  { n: "३", hi: "महाबीर बिक्रम बजरंगी।\nकुमति निवार सुमति के संगी॥", en: "Great hero, mighty and powerful, you remove wrong-mindedness and keep company with wisdom.", roman: "Mahabir bikram Bajrangi.\nKumati nivar sumati ke sangi." },
-  { n: "४", hi: "कंचन बरन बिराज सुबेसा।\nकानन कुण्डल कुंचित केसा॥", en: "Your golden form shines in beautiful attire, with earrings and curly hair.", roman: "Kanchan baran biraj subesa.\nKanan kundal kunchit kesa." },
-  { n: "५", hi: "हाथ बज्र औ ध्वजा बिराजै।\nकाँधे मूँज जनेऊ साजै॥", en: "The thunderbolt and flag adorn your hands; the sacred thread rests upon your shoulder.", roman: "Hath bajra au dhvaja birajai.\nKandhe moonj janeu sajai." },
-  { n: "६", hi: "शंकर सुवन केसरी नंदन।\nतेज प्रताप महा जग वंदन॥", en: "You are Shiva's embodiment, Kesari's son; your radiance and glory are revered throughout the world.", roman: "Shankar suvan Kesari nandan.\nTej pratap maha jag vandan." },
-  { n: "७", hi: "विद्यावान गुनी अति चातुर।\nराम काज करिबे को आतुर॥", en: "Full of learning, virtue, and wisdom, you are ever eager to perform Rama's work.", roman: "Vidyavan guni ati chatur.\nRam kaj karibe ko atur." },
-  { n: "८", hi: "प्रभु चरित्र सुनिबे को रसिया।\nराम लखन सीता मन बसिया॥", en: "You delight in hearing the Lord's story; Rama, Lakshmana, and Sita dwell within your heart.", en2: "", roman: "Prabhu charitra sunibe ko rasiya.\nRam Lakhan Sita man basiya." },
-  { n: "९", hi: "सूक्ष्म रूप धरि सियहिं दिखावा।\nबिकट रूप धरि लंक जरावा॥", en: "You took a subtle form to reveal yourself to Sita, and a fearsome form to burn Lanka.", roman: "Sukshma roop dhari Siyahin dikhava.\nBikat roop dhari Lank jarava." },
-  { n: "१०", hi: "भीम रूप धरि असुर संहारे।\nरामचंद्र के काज सँवारे॥", en: "Taking a mighty form, you destroyed demons and fulfilled the work of Lord Ramachandra.", roman: "Bhim roop dhari asur sanhare.\nRamchandra ke kaj sanvare." },
-  { n: "॥ चौपाई ॥", hi: "लाय सजीवन लखन जियाए।\nश्रीरघुबीर हरषि उर लाए॥", en: "You brought the life-restoring herb and revived Lakshmana; Rama embraced you with joy.", roman: "Laye Sanjivan Lakhan jiyaye.\nShri Raghubir harashi ur laye." },
-  { n: "॥ समापन ॥", hi: "पवनतनय संकट हरन, मंगल मूरति रूप।\nराम लखन सीता सहित, हृदय बसहु सुर भूप॥", en: "O son of the Wind, remover of troubles, embodiment of auspiciousness, dwell in my heart with Rama, Lakshmana, and Sita.", roman: "Pavan-tanay sankat haran, mangal murti roop.\nRam Lakhan Sita sahit, hriday basahu sur bhoop." },
 ];
 
 export default function Home() {
@@ -44,7 +30,8 @@ export default function Home() {
   const getText = (verse: typeof verses[number]) => {
     if (language === "en") return verse.en;
     if (language === "roman") return verse.roman;
-    return verse.hi;
+    const schemes: Record<string, string> = { bn: "bengali", ta: "tamil", te: "telugu", gu: "gujarati", kn: "kannada", ml: "malayalam", pa: "gurmukhi" };
+    return schemes[language] ? Sanscript.t(verse.hi, "devanagari", schemes[language]) : verse.hi;
   };
 
   const displayVerses = useMemo(() => verses, []);
@@ -95,7 +82,7 @@ export default function Home() {
         </section>
 
         <section id="read" className="mx-auto max-w-7xl px-5 py-14 lg:px-10 lg:py-20">
-          <div className="mb-10 flex flex-col justify-between gap-6 border-b border-[#d7caba] pb-8 sm:flex-row sm:items-end"><div><div className="mb-3 flex items-center gap-3 text-[#b45a31]"><span className="text-lg">✦</span><span className="text-xs font-bold uppercase tracking-[0.28em]">The reading desk</span></div><h2 className="font-serif text-4xl font-semibold tracking-[-0.03em] text-[#243b49] sm:text-5xl">Hanuman Chalisa</h2><p className="mt-2 text-sm text-[#6d787a]">{activeLanguage.note} · 13 selected passages</p></div><div className="flex items-center gap-2"><button onClick={() => setFontSize(Math.max(.88, fontSize - .08))} aria-label="Decrease text size" className="grid h-9 w-9 place-items-center rounded-full border border-[#cdbda9] bg-[#fffaf1] text-[#49616a] transition hover:border-[#d96b2b] hover:text-[#a94725]"><Minus className="h-4 w-4" /></button><span className="min-w-12 text-center text-xs font-bold text-[#6d787a]">Aa</span><button onClick={() => setFontSize(Math.min(1.22, fontSize + .08))} aria-label="Increase text size" className="grid h-9 w-9 place-items-center rounded-full border border-[#cdbda9] bg-[#fffaf1] text-[#49616a] transition hover:border-[#d96b2b] hover:text-[#a94725]"><Plus className="h-4 w-4" /></button><button onClick={copyPage} aria-label="Copy Hindi text" className="ml-2 grid h-9 w-9 place-items-center rounded-full border border-[#cdbda9] bg-[#fffaf1] text-[#49616a] transition hover:border-[#d96b2b] hover:text-[#a94725]"><Copy className="h-4 w-4" /></button></div></div>
+          <div className="mb-10 flex flex-col justify-between gap-6 border-b border-[#d7caba] pb-8 sm:flex-row sm:items-end"><div><div className="mb-3 flex items-center gap-3 text-[#b45a31]"><span className="text-lg">✦</span><span className="text-xs font-bold uppercase tracking-[0.28em]">The reading desk</span></div><h2 className="font-serif text-4xl font-semibold tracking-[-0.03em] text-[#243b49] sm:text-5xl">Hanuman Chalisa</h2><p className="mt-2 text-sm text-[#6d787a]">{activeLanguage.note} · {verseCount} chaupais</p>{!['hi','en','roman'].includes(language) && <p className="mt-2 max-w-xl text-xs leading-5 text-[#9a8f82]">This edition keeps the complete canonical text while the regional-script translation is being editorially verified. Source edition: Vaidika Vignanam.</p>}</div><div className="flex items-center gap-2"><button onClick={() => setFontSize(Math.max(.88, fontSize - .08))} aria-label="Decrease text size" className="grid h-9 w-9 place-items-center rounded-full border border-[#cdbda9] bg-[#fffaf1] text-[#49616a] transition hover:border-[#d96b2b] hover:text-[#a94725]"><Minus className="h-4 w-4" /></button><span className="min-w-12 text-center text-xs font-bold text-[#6d787a]">Aa</span><button onClick={() => setFontSize(Math.min(1.22, fontSize + .08))} aria-label="Increase text size" className="grid h-9 w-9 place-items-center rounded-full border border-[#cdbda9] bg-[#fffaf1] text-[#49616a] transition hover:border-[#d96b2b] hover:text-[#a94725]"><Plus className="h-4 w-4" /></button><button onClick={copyPage} aria-label="Copy Hindi text" className="ml-2 grid h-9 w-9 place-items-center rounded-full border border-[#cdbda9] bg-[#fffaf1] text-[#49616a] transition hover:border-[#d96b2b] hover:text-[#a94725]"><Copy className="h-4 w-4" /></button></div></div>
           <div className="grid gap-12 lg:grid-cols-[minmax(0,1fr)_280px]">
             <div className="max-w-3xl">
               {displayVerses.map((verse, index) => <article key={index} className={`group relative border-b border-[#dfd2c2] py-7 first:pt-0 ${index === 0 || index === displayVerses.length - 1 ? "bg-[#fbf7ef]/45" : ""}`}><div className="flex gap-5"><span className="mt-1 w-8 shrink-0 font-serif text-sm font-bold text-[#b87452]">{verse.n}</span><div className="min-w-0 flex-1"><p style={{ fontSize: `${fontSize}rem` }} className={`whitespace-pre-line font-serif leading-[1.8] ${language === "hi" || language === "roman" ? "text-[#203c4d]" : "text-[#344c58]"}`}>{getText(verse)}</p>{language === "hi" && <p className="mt-3 whitespace-pre-line text-xs leading-6 text-[#9a8f82]">{verse.roman}</p>}</div><button onClick={() => toggleSaved(index)} aria-label={saved.includes(index) ? "Remove bookmark" : "Save verse"} className={`mt-1 grid h-8 w-8 shrink-0 place-items-center rounded-full transition ${saved.includes(index) ? "bg-[#f1d4bd] text-[#a94725]" : "text-[#bcae9d] opacity-0 group-hover:opacity-100 hover:bg-[#f1e4d7] hover:text-[#a94725]"}`}><Bookmark className="h-4 w-4" fill={saved.includes(index) ? "currentColor" : "none"} /></button></div></article>)}
