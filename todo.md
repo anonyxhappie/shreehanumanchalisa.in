@@ -68,3 +68,9 @@
 - [ ] Verify the selected rate is applied to the audio element and persists during playback.
 - [ ] Run type-check, production build, and preview verification.
 - [ ] Save a delivery checkpoint.
+
+## Default playback speed adjustment
+
+- [ ] Change the default recitation speed from 1.2× to 1.5×.
+- [ ] Verify the speed control and production build.
+- [ ] Save a delivery checkpoint.
