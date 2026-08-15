@@ -46,7 +46,7 @@ export default function Home() {
   const [showLanguages, setShowLanguages] = useState(false);
   const [showMeaning, setShowMeaning] = useState(false);
   const [audioIndex, setAudioIndex] = useState(0);
-  const [audioRate, setAudioRate] = useState(1);
+  const [audioRate, setAudioRate] = useState(1.5);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [audioTime, setAudioTime] = useState(0);
   const [audioDuration, setAudioDuration] = useState(audioDurations.hi);
