@@ -49,3 +49,14 @@
 - [ ] Add analytics events for language changes, playback, meaning toggle, and feedback clicks.
 - [ ] Verify responsive layout, type-check, production build, and preview.
 - [ ] Save a delivery checkpoint or follow-up pull request as appropriate.
+
+## Selected feature upgrades
+
+- [ ] Audit current audio, feedback, analytics, and asset structure.
+- [ ] Add installable PWA metadata, service worker, and offline caching for core text and local media.
+- [ ] Add analytics opt-out and a transparent privacy control.
+- [ ] Replace proportional verse timing with exact timestamp metadata and synchronized seeking.
+- [ ] Add shareable verse-card generation and Web Share/download fallbacks.
+- [ ] Add structured feedback categories and prefilled GitHub issue links.
+- [ ] Verify all selected features, type-check, production build, and preview.
+- [ ] Save a delivery checkpoint.
