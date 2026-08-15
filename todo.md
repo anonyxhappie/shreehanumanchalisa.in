@@ -60,3 +60,11 @@
 - [ ] Add structured feedback categories and prefilled GitHub issue links.
 - [ ] Verify all selected features, type-check, production build, and preview.
 - [ ] Save a delivery checkpoint.
+
+## Playback speed update
+
+- [ ] Set a slightly faster default playback rate.
+- [ ] Add speed options through 3×.
+- [ ] Verify the selected rate is applied to the audio element and persists during playback.
+- [ ] Run type-check, production build, and preview verification.
+- [ ] Save a delivery checkpoint.
