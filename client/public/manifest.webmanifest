@@ -1,0 +1,25 @@
+{
+  "name": "Shree Hanuman Chalisa",
+  "short_name": "Hanuman Chalisa",
+  "description": "Read and listen to the Hanuman Chalisa in Hindi and regional languages.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#f4efe5",
+  "theme_color": "#f4efe5",
+  "lang": "hi",
+  "icons": [
+    {
+      "src": "/media/hanuman-mark.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/media/hanuman-mark.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

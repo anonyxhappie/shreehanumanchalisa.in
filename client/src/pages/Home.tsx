@@ -39,6 +39,21 @@ const languages = [
   { id: "roman", label: "Romanized", native: "Latin", note: "उच्चारण" },
 ];
 
+const siteUrl = "https://shreehanumanchalisa.in/";
+const languageSeo: Record<string, { htmlLang: string; title: string; description: string; locale: string }> = {
+  hi: { htmlLang: "hi", title: "Hanuman Chalisa in Hindi | श्री हनुमान चालीसा", description: "पूरी हनुमान चालीसा हिंदी में पढ़ें और सुनें, अर्थ, रोमन उच्चारण, सिंक्रोनाइज़्ड ऑडियो और ऑफलाइन सुविधा के साथ।", locale: "hi_IN" },
+  en: { htmlLang: "en", title: "Hanuman Chalisa in English with Meaning | Shree Hanuman Chalisa", description: "Read the complete Hanuman Chalisa with English meaning, synchronized recitation, transliteration, and offline support.", locale: "en_IN" },
+  mr: { htmlLang: "mr", title: "हनुमान चालीसा मराठीत अर्थासह | Shree Hanuman Chalisa", description: "हनुमान चालीसा मराठी अर्थासह वाचा आणि ऐका. हिंदी, रोमन उच्चारण आणि इतर भारतीय भाषाही उपलब्ध आहेत.", locale: "mr_IN" },
+  bn: { htmlLang: "bn", title: "হনুমান চালিসা বাংলায় | Shree Hanuman Chalisa", description: "বাংলা লিপিতে সম্পূর্ণ হনুমান চালিসা পড়ুন ও শুনুন, সঙ্গে সিঙ্ক্রোনাইজড পাঠ এবং অফলাইন সুবিধা।", locale: "bn_IN" },
+  ta: { htmlLang: "ta", title: "அனுமன் சாலிசா தமிழில் | Shree Hanuman Chalisa", description: "தமிழில் முழுமையான அனுமன் சாலிசாவை வாசித்து கேளுங்கள்; ஒத்திசைக்கப்பட்ட பாராயணம் மற்றும் ஆஃப்லைன் வசதியுடன்.", locale: "ta_IN" },
+  te: { htmlLang: "te", title: "హనుమాన్ చాలీసా తెలుగులో | Shree Hanuman Chalisa", description: "తెలుగులో పూర్తి హనుమాన్ చాలీసాను చదవండి, వినండి; సమకాలీకరించిన ఆడియో మరియు ఆఫ్‌లైన్ పఠనంతో.", locale: "te_IN" },
+  gu: { htmlLang: "gu", title: "હનુમાન ચાલીસા ગુજરાતીમાં | Shree Hanuman Chalisa", description: "ગુજરાતીમાં સંપૂર્ણ હનુમાન ચાલીસા વાંચો અને સાંભળો, અર્થ અને સિંક્રનાઇઝ્ડ ઓડિયો સાથે.", locale: "gu_IN" },
+  kn: { htmlLang: "kn", title: "ಹನುಮಾನ್ ಚಾಲೀಸಾ ಕನ್ನಡದಲ್ಲಿ | Shree Hanuman Chalisa", description: "ಕನ್ನಡ ಲಿಪಿಯಲ್ಲಿ ಸಂಪೂರ್ಣ ಹನುಮಾನ್ ಚಾಲೀಸಾವನ್ನು ಓದಿ ಮತ್ತು ಆಲಿಸಿ, ಸಿಂಕ್ರೊನೈಸ್ ಮಾಡಿದ ಪಠಣದೊಂದಿಗೆ.", locale: "kn_IN" },
+  ml: { htmlLang: "ml", title: "ഹനുമാൻ ചാലിസ മലയാളത്തിൽ | Shree Hanuman Chalisa", description: "മലയാളത്തിൽ പൂർണ്ണ ഹനുമാൻ ചാലിസ വായിക്കുകയും കേൾക്കുകയും ചെയ്യുക, സമന്വയിപ്പിച്ച ഓഡിയോയോടൊപ്പം.", locale: "ml_IN" },
+  pa: { htmlLang: "pa", title: "ਹਨੂਮਾਨ ਚਾਲੀਸਾ ਪੰਜਾਬੀ ਵਿੱਚ | Shree Hanuman Chalisa", description: "ਪੰਜਾਬੀ ਲਿਪੀ ਵਿੱਚ ਪੂਰੀ ਹਨੂਮਾਨ ਚਾਲੀਸਾ ਪੜ੍ਹੋ ਅਤੇ ਸੁਣੋ, ਸਮਕਾਲੀ ਆਡੀਓ ਪਾਠ ਦੇ ਨਾਲ।", locale: "pa_IN" },
+  roman: { htmlLang: "en-Latn", title: "Hanuman Chalisa Romanized for Easy Pronunciation", description: "Read the complete Hanuman Chalisa in Romanized Hindi for pronunciation, with Hindi text, meanings, and recorded audio.", locale: "en_IN" },
+};
+
 export default function Home() {
   const [language, setLanguage] = useState("hi");
   const [fontSize, setFontSize] = useState(1);
@@ -153,6 +168,22 @@ export default function Home() {
   }, [language]);
 
   useEffect(() => {
+    const seo = languageSeo[language] ?? languageSeo.hi;
+    document.documentElement.lang = seo.htmlLang;
+    document.title = seo.title;
+    const setMeta = (selector: string, attribute: string, content: string) => {
+      const element = document.head.querySelector<HTMLMetaElement>(selector);
+      if (element) element.setAttribute(attribute, content);
+    };
+    setMeta('meta[name="description"]', "content", seo.description);
+    setMeta('meta[property="og:title"]', "content", seo.title);
+    setMeta('meta[property="og:description"]', "content", seo.description);
+    setMeta('meta[property="og:locale"]', "content", seo.locale);
+    setMeta('meta[name="twitter:title"]', "content", seo.title);
+    setMeta('meta[name="twitter:description"]', "content", seo.description);
+  }, [language]);
+
+  useEffect(() => {
     const active = document.querySelector(`[data-verse-index="${audioIndex}"]`);
     if (isSpeaking && active) active.scrollIntoView({ behavior: "smooth", block: "center" });
   }, [audioIndex, isSpeaking]);
@@ -213,6 +244,8 @@ export default function Home() {
             </aside>
           </div>
         </section>
+
+        <section id="languages" aria-labelledby="languages-heading" className="border-t border-[#d9cbb8] bg-[#f8f4eb] px-5 py-14 lg:px-10 lg:py-20"><div className="mx-auto max-w-7xl"><p className="text-[10px] font-bold uppercase tracking-[0.28em] text-[#b45a31]">One prayer, many scripts</p><h2 id="languages-heading" className="mt-4 max-w-3xl font-serif text-4xl font-semibold leading-tight text-[#263f4d] sm:text-5xl">Hanuman Chalisa in Hindi and regional languages.</h2><p className="mt-5 max-w-3xl text-base leading-8 text-[#627176]">Read the complete Hanuman Chalisa in Hindi, English, Marathi, Bengali, Tamil, Telugu, Gujarati, Kannada, Malayalam, Punjabi, or Romanized Hindi. Choose a language above to change the script, meaning, and recorded recitation.</p><div className="mt-8 flex flex-wrap gap-2">{languages.map((item) => <span key={item.id} lang={item.id === "roman" ? "en" : item.id} className="rounded-full border border-[#d8c7b4] bg-[#fffaf1] px-3.5 py-2 text-sm font-semibold text-[#4b6067]">{item.label}</span>)}</div></div></section>
 
         <section id="about" className="border-t border-[#d9cbb8] bg-[#ece3d5] px-5 py-16 lg:px-10"><div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[1fr_1.2fr] lg:items-center"><div className="overflow-hidden rounded-[2rem] bg-[#3c3030] shadow-[0_20px_60px_rgba(87,53,30,0.14)]"><img src={assetUrl("hanuman-meditation.png")} alt="A devotional illustration of Hanuman in prayer" className="h-full w-full object-cover" /></div><div className="max-w-xl"><p className="text-[10px] font-bold uppercase tracking-[0.28em] text-[#b45a31]">About this prayer</p><h2 className="mt-4 font-serif text-4xl font-semibold leading-tight text-[#263f4d]">A prayer carried<br /><em className="font-normal text-[#ad512a]">across generations.</em></h2><p className="mt-5 text-base leading-8 text-[#627176]">The Hanuman Chalisa is a devotional hymn of forty verses in praise of Hanuman. This small reading space is made for returning: before the day begins, after it ends, or whenever a steady word is needed.</p><div className="mt-7 flex flex-wrap gap-3"><span className="rounded-full border border-[#cdbda9] bg-[#f6eee4] px-4 py-2 text-xs font-bold text-[#5e6c6d]">Hindi first</span><span className="rounded-full border border-[#cdbda9] bg-[#f6eee4] px-4 py-2 text-xs font-bold text-[#5e6c6d]">11 languages</span><span className="rounded-full border border-[#cdbda9] bg-[#f6eee4] px-4 py-2 text-xs font-bold text-[#5e6c6d]">Made for quiet reading</span></div></div></div></section>
       </main>
