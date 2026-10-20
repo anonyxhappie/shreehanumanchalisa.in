@@ -1,9 +1,12 @@
 /* Quiet Indian Manuscript direction: reading-first layout, warm paper, diya saffron, ink-blue type, restrained devotional motion. */
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Bookmark, ChevronDown, Copy, Download, Languages, Mail, MessageCircle, Minus, Music2, Pause, Play, Plus, Share2, SkipBack, SkipForward, Sparkles, Square, Volume2 } from "lucide-react";
+import { Accessibility, Bookmark, Check, ChevronDown, Copy, Download, ExternalLink, Languages, Mail, MessageCircle, Minus, Music2, Pause, Play, Plus, RotateCcw, Share2, SkipBack, SkipForward, Sparkles, Square, Volume2 } from "lucide-react";
 import { toast } from "sonner";
 import { verses, verseCount } from "@/lib/hanumanChalisa";
 import { marathiMeanings } from "@/lib/marathiChalisa";
+import { festivalDates, templesReferenceUrl } from "@/lib/constants";
+import { usePersistence } from "@/hooks/usePersistence";
+import { Link } from "wouter";
 import Sanscript from "@indic-transliteration/sanscript";
 
 const audioSources: Record<string, string> = {
@@ -51,10 +54,9 @@ const languages = [
 ];
 
 export default function Home() {
-  const [language, setLanguage] = useState("hi");
-  const [fontSize, setFontSize] = useState(1);
-
-  const [saved, setSaved] = useState<number[]>([]);
+  const [preferences, setPreferences] = usePersistence();
+  const { language, fontSize, saved, japaCount, highContrast, dyslexiaFriendly, festivalMode } = preferences;
+  const setPreference = <K extends keyof typeof preferences>(key: K, value: (typeof preferences)[K]) => setPreferences((current) => ({ ...current, [key]: value }));
   const [showLanguages, setShowLanguages] = useState(false);
   const [showMeaning, setShowMeaning] = useState(false);
   const [audioIndex, setAudioIndex] = useState(0);
@@ -67,6 +69,9 @@ export default function Home() {
   const [shareIndex, setShareIndex] = useState<number | null>(null);
   const [installPrompt, setInstallPrompt] = useState<InstallPromptEvent | null>(null);
   const [isOffline, setIsOffline] = useState(() => typeof navigator !== "undefined" && !navigator.onLine);
+  const [showAccessibility, setShowAccessibility] = useState(false);
+  const setLanguage = (value: string) => setPreference("language", value);
+  const setFontSize = (value: number) => setPreference("fontSize", value);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const activeLanguage = languages.find((item) => item.id === language) ?? languages[0];
   const audioSrc = audioSources[language] ?? audioSources.hi;
@@ -181,7 +186,7 @@ export default function Home() {
     if (isSpeaking && active) active.scrollIntoView({ behavior: "smooth", block: "center" });
   }, [audioIndex, isSpeaking]);
   const toggleSaved = (index: number) => {
-    setSaved((current) => current.includes(index) ? current.filter((item) => item !== index) : [...current, index]);
+    setPreferences((current) => ({ ...current, saved: current.saved.includes(index) ? current.saved.filter((item) => item !== index) : [...current.saved, index] }));
     toast(saved.includes(index) ? "Verse removed from your quiet shelf." : "Verse saved to your quiet shelf.");
   };
 
@@ -248,7 +253,7 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-[#f4efe5] text-[#182c3c] selection:bg-[#f0c8a3] selection:text-[#182c3c]">
+    <div className={`min-h-screen bg-[#f4efe5] text-[#182c3c] selection:bg-[#f0c8a3] selection:text-[#182c3c] ${highContrast ? "contrast-125" : ""} ${dyslexiaFriendly ? "[&_p]:tracking-[0.02em] [&_p]:leading-[2]" : ""} ${festivalMode ? "bg-[radial-gradient(circle_at_top_right,_#fff1d7,_#f4efe5_48%)]" : ""}`}>
       <header className="relative z-20 border-b border-[#d9cbb8]/70 bg-[#f8f4eb]/90 backdrop-blur-xl">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-4 lg:px-10">
           <a href="#top" className="group flex items-center gap-3" aria-label="Hanuman Chalisa home">
@@ -258,10 +263,11 @@ export default function Home() {
             </span>
             <span className="leading-none"><span className="block font-serif text-lg font-bold tracking-tight text-[#263d4d]">Chalisa</span><span className="mt-1 block text-[10px] font-semibold uppercase tracking-[0.22em] text-[#a66d4d]">हनुमान · prayer book</span></span>
           </a>
-          <nav className="hidden items-center gap-8 text-sm font-medium text-[#56656c] md:flex"><a href="#read" className="transition-colors hover:text-[#a94725]">Read</a><a href="#about" className="transition-colors hover:text-[#a94725]">About the prayer</a><a href="#feedback" className="transition-colors hover:text-[#a94725]">Feedback</a><button onClick={() => toast("Audio guide is coming soon.")} className="inline-flex items-center gap-2 transition-colors hover:text-[#a94725]"><Volume2 className="h-4 w-4" /> Listen</button></nav>
+          <nav className="hidden items-center gap-8 text-sm font-medium text-[#56656c] md:flex"><a href="#read" className="transition-colors hover:text-[#a94725]">Read</a><a href="#about" className="transition-colors hover:text-[#a94725]">About the prayer</a><Link href="/temples" className="transition-colors hover:text-[#a94725]">Temples</Link><a href="#feedback" className="transition-colors hover:text-[#a94725]">Feedback</a><button onClick={() => setShowAccessibility((value) => !value)} aria-expanded={showAccessibility} className="inline-flex items-center gap-2 transition-colors hover:text-[#a94725]"><Accessibility className="h-4 w-4" /> Access</button></nav>
           <button onClick={() => setShowLanguages((value) => !value)} className="relative inline-flex items-center gap-2 rounded-full border border-[#cdbda9] bg-[#fffaf1] px-3.5 py-2 text-sm font-semibold text-[#344c58] shadow-sm transition hover:border-[#d96b2b]/60 hover:text-[#a94725] active:scale-[0.97]"><Languages className="h-4 w-4 text-[#d96b2b]" /> {activeLanguage.label} <ChevronDown className="h-3.5 w-3.5" />
             {showLanguages && <div className="absolute right-0 top-12 z-30 w-56 rounded-2xl border border-[#dbcdbb] bg-[#fffaf1] p-2 text-left shadow-[0_20px_60px_rgba(87,53,30,0.18)]"><p className="px-3 pb-2 pt-1 text-[10px] font-bold uppercase tracking-[0.2em] text-[#a66d4d]">Choose a language</p>{languages.map((item) => <button key={item.id} onClick={() => { track("language_changed", { language: item.id }); setLanguage(item.id); setShowLanguages(false); }} className={`flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-left transition ${language === item.id ? "bg-[#f2dfcd] text-[#9f4223]" : "text-[#3e5159] hover:bg-[#f6ede2]"}`}><span className="font-medium">{item.label}</span><span className="text-xs text-[#8c8277]">{item.note}</span></button>)}</div>}
           </button>
+          {showAccessibility && <div className="absolute right-5 top-20 z-30 w-72 rounded-2xl border border-[#dbcdbb] bg-[#fffaf1] p-4 text-sm shadow-[0_20px_60px_rgba(87,53,30,0.18)] lg:right-10"><p className="text-xs font-bold uppercase tracking-[0.2em] text-[#a66d4d]">Reading comfort</p><label className="mt-4 flex items-center justify-between gap-4"><span>High contrast</span><input type="checkbox" checked={highContrast} onChange={(event) => setPreference("highContrast", event.target.checked)} /></label><label className="mt-3 flex items-center justify-between gap-4"><span>Dyslexia-friendly spacing</span><input type="checkbox" checked={dyslexiaFriendly} onChange={(event) => setPreference("dyslexiaFriendly", event.target.checked)} /></label><label className="mt-3 flex items-center justify-between gap-4"><span>Festival mode</span><input type="checkbox" checked={festivalMode} onChange={(event) => setPreference("festivalMode", event.target.checked)} /></label></div>}
         </div>
       </header>
 
@@ -295,6 +301,7 @@ export default function Home() {
           </div>
         </section>
 
+        <section className="border-t border-[#d9cbb8] bg-[#f1e5d5] px-5 py-14 lg:px-10"><div className="mx-auto grid max-w-7xl gap-5 md:grid-cols-3"><div className="rounded-[1.5rem] border border-[#d8c7b4] bg-[#fffaf1]/80 p-6"><div className="flex items-center justify-between"><p className="text-xs font-bold uppercase tracking-[0.2em] text-[#b45a31]">Japa counter</p><RotateCcw className="h-4 w-4 text-[#d96b2b]" /></div><p className="mt-3 font-serif text-4xl font-semibold text-[#294454]">{japaCount}</p><p className="mt-1 text-sm text-[#6c787a]">Chalisa recitations on this device</p><div className="mt-5 flex gap-2"><button onClick={() => setPreference("japaCount", japaCount + 1)} className="inline-flex items-center gap-2 rounded-full bg-[#d96b2b] px-4 py-2 text-xs font-bold text-[#fffaf1]"><Check className="h-3.5 w-3.5" /> Count one</button><button onClick={() => setPreference("japaCount", 0)} className="rounded-full border border-[#cdbda9] px-4 py-2 text-xs font-bold text-[#52656b]">Reset</button></div></div><div className="rounded-[1.5rem] border border-[#d8c7b4] bg-[#fffaf1]/80 p-6"><p className="text-xs font-bold uppercase tracking-[0.2em] text-[#b45a31]">Festival calendar</p><p className="mt-3 font-serif text-2xl font-semibold text-[#294454]">Auspicious days</p>{festivalDates.slice(0, 2).map((item) => <div key={item.name} className="mt-4 border-t border-[#e0d1bf] pt-3"><p className="text-sm font-bold text-[#52656b]">{item.name}</p><p className="mt-1 text-xs text-[#9a8f82]">{item.date}</p></div>)}</div><div className="rounded-[1.5rem] border border-[#d8c7b4] bg-[#fffaf1]/80 p-6"><p className="text-xs font-bold uppercase tracking-[0.2em] text-[#b45a31]">Pilgrimage</p><p className="mt-3 font-serif text-2xl font-semibold text-[#294454]">Find a temple</p><p className="mt-2 text-sm leading-6 text-[#6c787a]">Visit the growing directory or explore the companion Divine India guide.</p><div className="mt-5 flex flex-wrap gap-2"><Link href="/temples" className="rounded-full bg-[#d96b2b] px-4 py-2 text-xs font-bold text-[#fffaf1]">Open directory</Link><a href={templesReferenceUrl} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 rounded-full border border-[#cdbda9] px-4 py-2 text-xs font-bold text-[#52656b]">Divine India <ExternalLink className="h-3 w-3" /></a></div></div></div></section>
         <section id="feedback" className="border-t border-[#d9cbb8] bg-[#ece3d5] px-5 py-14 lg:px-10 lg:py-18">
           <div className="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[1fr_1.1fr] lg:items-center">
             <div>
