@@ -273,7 +273,7 @@ export default function Home() {
 
       <main id="top">
         <section className="relative overflow-hidden border-b border-[#d9cbb8] bg-[#f4efe5] text-[#243b49]">
-          <div className="absolute inset-0 bg-[url('/manus-storage/hanuman-hero_0796f0c9.png')] bg-cover bg-center opacity-35 mix-blend-multiply" />
+          <div className="absolute inset-0 bg-[url('/media/hanuman-hero.png')] bg-cover bg-center opacity-35 mix-blend-multiply" />
           <div className="absolute inset-0 bg-gradient-to-r from-[#f4efe5]/95 via-[#f4efe5]/55 to-transparent" />
           <div className="relative mx-auto grid min-h-[550px] max-w-7xl items-center px-5 py-20 lg:grid-cols-[1.05fr_0.95fr] lg:px-10 lg:py-28">
             <div className="max-w-xl animate-[rise_700ms_cubic-bezier(.23,1,.32,1)_both]">
