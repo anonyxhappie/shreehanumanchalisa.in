@@ -35,6 +35,7 @@ function drawScene(
   time: number,
   index: number,
   alpha: number,
+  reduced: boolean,
 ) {
   const palette = palettes[index % palettes.length];
   ctx.save();
@@ -46,7 +47,6 @@ function drawScene(
   ctx.fillStyle = bg;
   ctx.fillRect(0, 0, w, h);
 
-  const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const drift = reduced ? 0 : time;
   const sx = w * (0.64 + Math.sin(drift * 0.12 + index) * 0.035);
   const sy = h * (0.38 + Math.cos(drift * 0.1 + index) * 0.025);
@@ -197,6 +197,7 @@ export default function VisualExperience() {
   const transitionStartRef = useRef(0);
   const [activeIndex, setActiveIndex] = useState(0);
   const [paused, setPaused] = useState(false);
+  const pausedRef = useRef(false);
   const reducedMotion = typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   const navigateTo = useCallback((index: number) => {
@@ -229,18 +230,18 @@ export default function VisualExperience() {
     const frame = (now: number) => {
       const delta = Math.min((now - last) / 1000, 0.04);
       last = now;
-      if (!paused && !motion.matches) time += delta;
+      if (!pausedRef.current && !motion.matches) time += delta;
       const current = activeRef.current;
       const previous = previousRef.current;
       const transition = Math.min(1, (now - transitionStartRef.current) / 1100);
       ctx.clearRect(0, 0, width, height);
       if (previous !== current && transition < 1) {
-        drawScene(ctx, width, height, time, previous, 1 - transition);
-        drawScene(ctx, width, height, time, current, transition);
+        drawScene(ctx, width, height, time, previous, 1 - transition, motion.matches);
+        drawScene(ctx, width, height, time, current, transition, motion.matches);
       } else {
-        drawScene(ctx, width, height, time, current, 1);
+        drawScene(ctx, width, height, time, current, 1, motion.matches);
       }
-      if (!paused && !motion.matches) raf = window.requestAnimationFrame(frame);
+      if (!motion.matches) raf = window.requestAnimationFrame(frame);
     };
     const resizeObserver = () => resize();
     resize();
@@ -257,7 +258,7 @@ export default function VisualExperience() {
       motion.removeEventListener("change", onMotionChange);
       if (raf) window.cancelAnimationFrame(raf);
     };
-  }, [paused]);
+  }, []);
 
   useEffect(() => {
     const observer = new IntersectionObserver((entries) => {
@@ -289,7 +290,7 @@ export default function VisualExperience() {
           <ArrowLeft className="h-4 w-4" /> Back to reading
         </Link>
         <div className="hidden items-center gap-2 text-[10px] font-bold uppercase tracking-[0.28em] text-white/55 sm:flex"><Sparkles className="h-3.5 w-3.5" /> The living Chalisa</div>
-        <button type="button" onClick={() => setPaused((value) => !value)} className="pointer-events-auto inline-flex items-center gap-2 rounded-full bg-black/20 px-4 py-2 text-xs font-semibold text-white/85 backdrop-blur-md transition hover:bg-black/35" aria-label={paused ? "Resume animation" : "Pause animation"}>
+        <button type="button" onClick={() => { pausedRef.current = !pausedRef.current; setPaused(pausedRef.current); }} className="pointer-events-auto inline-flex items-center gap-2 rounded-full bg-black/20 px-4 py-2 text-xs font-semibold text-white/85 backdrop-blur-md transition hover:bg-black/35" aria-label={paused ? "Resume animation" : "Pause animation"}>
           {paused ? <Play className="h-3.5 w-3.5" /> : <Pause className="h-3.5 w-3.5" />}{paused ? "Resume" : "Pause"}
         </button>
       </header>
