@@ -226,7 +226,7 @@ export default function VerseSceneCanvas({ verseIndex, verseLabel, reducedMotion
       visible = entry.isIntersecting;
       if (visible && !reduced && !raf) raf = window.requestAnimationFrame(tick);
       if (!visible && raf) { window.cancelAnimationFrame(raf); raf = 0; }
-    }, { threshold: 0.05 });
+    }, { threshold: 0.05, rootMargin: "120px 0px" });
     intersectionObserver.observe(host);
 
     resize();
