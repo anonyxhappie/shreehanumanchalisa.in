@@ -222,8 +222,8 @@ function CharacterPose({ index, paused }: { index: number; paused: boolean }) {
     width={pose.width}
     height={pose.height}
     preserveAspectRatio="xMidYMid meet"
-    initial={{ opacity: 0, y: pose.y + 18 }}
-    animate={paused ? { opacity: 1, y: pose.y } : { opacity: 1, y: [pose.y, pose.y - 8, pose.y] }}
+    initial={{ opacity: 0, y: 18 }}
+    animate={paused ? { opacity: 1, y: 0 } : { opacity: 1, y: [0, -8, 0] }}
     transition={{ opacity: { duration: 0.45 }, y: { duration: 4.6, repeat: paused ? 0 : Infinity, ease: "easeInOut" } }}
     style={{ filter: "drop-shadow(0 18px 18px rgba(111, 69, 38, .12))" }}
   />;
