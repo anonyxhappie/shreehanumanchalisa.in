@@ -51,7 +51,9 @@ export default function VerseSceneCanvas({ verseIndex, verseLabel, reducedMotion
     const resize = () => {
       const rect = host.getBoundingClientRect();
       width = Math.max(1, rect.width);
-      height = Math.max(240, rect.height);
+      // Use a deliberate landscape composition; never derive canvas height from its own parent.
+      height = Math.max(220, Math.min(360, rect.width * 0.56));
+      host.style.height = `${height}px`;
       dpr = Math.min(window.devicePixelRatio || 1, 2);
       canvas.width = Math.round(width * dpr);
       canvas.height = Math.round(height * dpr);
@@ -62,7 +64,7 @@ export default function VerseSceneCanvas({ verseIndex, verseLabel, reducedMotion
     };
 
     const drawHanumanSilhouette = (time: number) => {
-      const cx = width * 0.69;
+      const cx = width * 0.72;
       const cy = height * 0.58 + (reduced ? 0 : Math.sin(time * 0.0011) * 5);
       const scale = Math.min(width / 390, height / 290) * 1.15;
       ctx.save();
@@ -142,7 +144,7 @@ export default function VerseSceneCanvas({ verseIndex, verseLabel, reducedMotion
       }
       ctx.restore();
 
-      ctx.fillStyle = "rgba(25, 39, 48, .58)";
+      ctx.fillStyle = "rgba(25, 39, 48, .78)";
       ctx.beginPath();
       ctx.moveTo(0, h * 0.72);
       ctx.lineTo(w * 0.14, h * 0.52);
@@ -193,13 +195,13 @@ export default function VerseSceneCanvas({ verseIndex, verseLabel, reducedMotion
       ctx.fillRect(0, 0, w, h);
 
       const margin = Math.max(22, w * 0.065);
-      const textWidth = Math.min(w * 0.48, 260);
+      const textWidth = Math.min(w * 0.43, 250);
       ctx.fillStyle = "rgba(255, 243, 220, .92)";
       ctx.font = "600 10px sans-serif";
       ctx.letterSpacing = "2px";
       ctx.fillText("SHREE HANUMAN CHALISA", margin, 28);
       ctx.fillStyle = "#fff0d2";
-      ctx.font = `600 ${Math.min(24, Math.max(17, w * 0.045))}px Georgia, serif`;
+      ctx.font = `600 ${Math.min(29, Math.max(20, w * 0.052))}px Georgia, serif`;
       ctx.letterSpacing = "0px";
       const breakAt = scene.title.lastIndexOf(" ");
       const lines = scene.title.length > 17 && breakAt > 0 ? [scene.title.slice(0, breakAt), scene.title.slice(breakAt + 1)] : [scene.title];
@@ -246,7 +248,7 @@ export default function VerseSceneCanvas({ verseIndex, verseLabel, reducedMotion
 
   return (
     <div ref={hostRef} className="verse-scene relative isolate my-6 overflow-hidden rounded-2xl border border-[#b88a62]/45 shadow-[0_18px_48px_rgba(53,35,24,0.18)]" role="img" aria-label={`Animated illustration for verse ${verseLabel}: ${scene.title}. ${scene.subtitle}`}>
-      <canvas ref={canvasRef} className="block h-[290px] w-full sm:h-[330px]" aria-hidden="true" />
+      <canvas ref={canvasRef} className="block w-full" style={{ aspectRatio: "16 / 9" }} aria-hidden="true" />
       <div className="pointer-events-none absolute inset-x-0 bottom-0 flex items-center justify-between bg-gradient-to-t from-[#172733]/80 via-[#172733]/30 to-transparent px-5 pb-4 pt-12 text-[#fff1d7]">
         <span className="text-[10px] font-semibold uppercase tracking-[0.2em] opacity-80">Living illustration · {verseLabel}</span>
         <span className="text-xs opacity-80">Procedural canvas</span>
