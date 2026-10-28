@@ -25,72 +25,68 @@ function Cloud({ x, y, scale = 1, color, delay = 0, paused }: { x: number; y: nu
   </motion.g>;
 }
 
-function FlyingHanuman({ paused }: { paused: boolean }) {
-  return <motion.g initial={false} animate={paused ? { y: 0, rotate: 0 } : { y: [0, -10, 0], rotate: [-1, 1.2, -1] }} transition={{ duration: 4.8, repeat: Infinity, ease: "easeInOut" }}><g transform="translate(720 435)">
-    {/* Tail: a long, expressive silhouette behind the body */}
-    <motion.path d="M-145 35 C-255 18 -246 -95 -165 -165 C-110 -213 -54 -181 -88 -143" fill="none" stroke="#a94b2b" strokeWidth="31" strokeLinecap="round" animate={paused ? { d: "M-145 35 C-255 18 -246 -95 -165 -165 C-110 -213 -54 -181 -88 -143" } : { d: ["M-145 35 C-255 18 -246 -95 -165 -165 C-110 -213 -54 -181 -88 -143", "M-145 35 C-249 4 -238 -103 -158 -166 C-103 -210 -53 -176 -87 -143", "M-145 35 C-255 18 -246 -95 -165 -165 C-110 -213 -54 -181 -88 -143"] }} transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }} />
-    <path d="M-155 24 C-251 5 -235 -93 -165 -151" fill="none" stroke="#e99b54" strokeWidth="14" strokeLinecap="round" />
-    {/* rear arm and gada */}
-    <path d="M-120 -4 L-226 62 L-293 104" fill="none" stroke="#c8753e" strokeWidth="40" strokeLinecap="round" strokeLinejoin="round" />
-    <path d="M-120 -4 L-226 62 L-293 104" fill="none" stroke="#e8a05c" strokeWidth="27" strokeLinecap="round" strokeLinejoin="round" />
-    <g transform="translate(-319 119) rotate(-35)">
-      <rect x="-10" y="-84" width="20" height="119" rx="9" fill="#d18b24" stroke="#f8c84e" strokeWidth="5" />
-      <circle cy="52" r="49" fill="#ffbd32" stroke="#e38b18" strokeWidth="7" />
-      <path d="M-34 32 Q0 7 34 32 M-37 55 Q0 78 37 55 M0 8 V95" fill="none" stroke="#e58a16" strokeWidth="5" strokeLinecap="round" />
-      <path d="M-31 82 L-47 97 L-19 93 M31 82 L47 97 L19 93" fill="#f7b52d" stroke="#e58a16" strokeWidth="5" strokeLinejoin="round" />
-    </g>
-    {/* legs and flowing saffron dhoti */}
-    <path d="M-84 78 C-121 132 -185 178 -226 222 C-243 241 -223 260 -205 245 L-117 194 C-78 174 -41 142 -22 103Z" fill="#c9753c" />
-    <path d="M-75 74 C-111 123 -170 168 -209 211 C-219 223 -210 235 -197 226 L-109 177 C-75 156 -42 127 -25 95Z" fill="#f7a51c" />
-    <path d="M-46 94 C-29 139 -8 174 24 192 C40 202 59 187 47 172 L9 117 L9 77Z" fill="#c9753c" />
-    <path d="M-38 91 C-21 132 -2 161 24 177 C37 184 47 174 37 163 L5 112 L5 77Z" fill="#ffb52b" />
-    <path d="M-184 206 Q-170 194 -154 198 M-206 224 l-10 14 M-193 226 l-7 15 M25 178 l-7 14 M36 176 l-3 14" stroke="#a94d2a" strokeWidth="5" strokeLinecap="round" />
-    <path d="M-116 24 Q-63 5 -13 23 L45 90 Q6 132 -61 103 L-134 70Z" fill="#e63f35" />
-    <path d="M-114 33 Q-66 17 -18 33 L33 91 Q2 109 -28 96 L-126 64Z" fill="#f04e3e" />
-    <path d="M-115 59 Q-67 82 -37 71 L-20 91 Q-66 116 -128 78Z" fill="#ffca42" />
-    <path d="M-61 39 Q-46 71 -55 104" stroke="#ffcf4c" strokeWidth="7" fill="none" />
-    {/* torso */}
-    <path d="M-130 -32 Q-105 -72 -50 -59 Q-3 -55 21 -17 L-5 52 Q-50 73 -112 38Z" fill="#c9753c" />
-    <path d="M-126 -35 Q-96 -65 -55 -54 Q-17 -50 5 -18 L-13 36 Q-54 51 -104 28Z" fill="#efa15d" />
-    <path d="M-94 -43 Q-60 -22 -30 -44" fill="none" stroke="#f8c77c" strokeWidth="8" strokeLinecap="round" />
-    {/* leading arm reaching forward */}
-    <path d="M-34 -37 Q30 -58 91 -91 L164 -123" fill="none" stroke="#c8753c" strokeWidth="39" strokeLinecap="round" strokeLinejoin="round" />
-    <path d="M-32 -39 Q31 -58 90 -89 L164 -120" fill="none" stroke="#efa15d" strokeWidth="27" strokeLinecap="round" strokeLinejoin="round" />
-    <path d="M153 -129 Q177 -144 200 -155 L236 -163 Q247 -162 242 -153 L212 -138 L245 -147 Q258 -146 250 -137 L216 -120 Q199 -112 179 -117 L158 -109Z" fill="#efa15d" stroke="#c8753c" strokeWidth="4" strokeLinejoin="round" />
-    <path d="M88 -79 Q101 -94 116 -83" fill="none" stroke="#ffc54a" strokeWidth="12" strokeLinecap="round" />
-    <path d="M-3 -45 Q8 -33 5 -14" fill="none" stroke="#ffc54a" strokeWidth="13" strokeLinecap="round" />
-    {/* neck, face and ears */}
-    <path d="M-85 -78 L-65 -42 L-31 -54 L-39 -91Z" fill="#d27a43" />
-    <ellipse cx="-73" cy="-103" rx="62" ry="66" fill="#a64f32" />
-    <ellipse cx="-74" cy="-108" rx="53" ry="57" fill="#d9864d" />
-    <ellipse cx="-119" cy="-103" rx="17" ry="24" fill="#bd623e" />
-    <ellipse cx="-121" cy="-103" rx="8" ry="13" fill="#f2a16d" />
-    <ellipse cx="-27" cy="-102" rx="16" ry="23" fill="#bd623e" />
-    <ellipse cx="-27" cy="-102" rx="8" ry="12" fill="#f2a16d" />
-    <ellipse cx="-72" cy="-77" rx="36" ry="26" fill="#f3b079" />
-    <ellipse cx="-89" cy="-108" rx="14" ry="19" fill="#fff8e9" />
-    <ellipse cx="-50" cy="-108" rx="14" ry="19" fill="#fff8e9" />
-    <ellipse cx="-86" cy="-106" rx="8" ry="12" fill="#33221e" />
-    <ellipse cx="-47" cy="-106" rx="8" ry="12" fill="#33221e" />
-    <circle cx="-83" cy="-111" r="3.5" fill="white" /><circle cx="-44" cy="-111" r="3.5" fill="white" />
-    <path d="M-72 -99 Q-60 -86 -72 -77 Q-82 -71 -92 -79" fill="none" stroke="#a94d36" strokeWidth="4" strokeLinecap="round" />
-    <path d="M-98 -68 Q-73 -48 -48 -68" fill="none" stroke="#9e3d2e" strokeWidth="5" strokeLinecap="round" />
-    <path d="M-95 -64 Q-73 -53 -51 -64" fill="none" stroke="#fff0ce" strokeWidth="3" strokeLinecap="round" />
-    {/* crown with layered gold, jewels and tilak */}
-    <path d="M-126 -143 L-133 -175 L-111 -164 L-99 -197 L-77 -173 L-58 -207 L-40 -170 L-20 -179 L-24 -143 Q-73 -127 -126 -143Z" fill="#ffbf2e" stroke="#df8418" strokeWidth="6" strokeLinejoin="round" />
-    <path d="M-119 -146 Q-73 -165 -29 -146 L-35 -132 Q-72 -144 -113 -132Z" fill="#ffdc63" />
-    <path d="M-91 -178 L-77 -194 L-64 -178" fill="#ffdf6a" stroke="#e48b1d" strokeWidth="4" />
-    <ellipse cx="-72" cy="-151" rx="10" ry="13" fill="#e94342" stroke="#fff0a6" strokeWidth="4" />
-    <path d="M-73 -132 L-73 -103" stroke="#fff0c4" strokeWidth="6" strokeLinecap="round" />
-    <path d="M-80 -130 L-73 -118 L-66 -130" fill="#d83d36" />
-    {/* earrings, armlets and necklaces */}
-    <circle cx="-123" cy="-78" r="11" fill="none" stroke="#ffc83f" strokeWidth="7" />
-    <path d="M-109 -49 Q-69 -17 -34 -49" fill="none" stroke="#ffca3f" strokeWidth="9" strokeLinecap="round" />
-    <path d="M-104 -44 Q-70 -1 -39 -44" fill="none" stroke="#f5d56b" strokeWidth="6" strokeLinecap="round" />
-    <path d="M-87 -24 L-72 -8 L-57 -24 L-72 -40Z" fill="#e7473d" stroke="#ffc83f" strokeWidth="6" />
-    <path d="M-129 -21 L-113 -15 M-18 -48 L-4 -43" stroke="#ffc83f" strokeWidth="11" strokeLinecap="round" />
-    <circle cx="-112" cy="0" r="10" fill="#ffca3f" /><circle cx="-4" cy="-17" r="10" fill="#ffca3f" />
-  </g></motion.g>;
+const poseByVerse: Record<number, { character: "hanuman" | "ram"; pose: string; width: number; height: number; x: number; y: number }> = {
+  0: { character: "hanuman", pose: "standing", width: 390, height: 440, x: 525, y: 280 },
+  1: { character: "hanuman", pose: "prayer", width: 440, height: 420, x: 500, y: 300 },
+  2: { character: "hanuman", pose: "standing", width: 390, height: 440, x: 525, y: 280 },
+  3: { character: "hanuman", pose: "running", width: 500, height: 450, x: 475, y: 275 },
+  4: { character: "hanuman", pose: "running", width: 500, height: 450, x: 475, y: 275 },
+  5: { character: "hanuman", pose: "standing", width: 390, height: 440, x: 525, y: 280 },
+  6: { character: "hanuman", pose: "standing", width: 390, height: 440, x: 525, y: 280 },
+  7: { character: "hanuman", pose: "running", width: 500, height: 450, x: 475, y: 275 },
+  8: { character: "ram", pose: "standing", width: 310, height: 510, x: 570, y: 250 },
+  9: { character: "hanuman", pose: "running", width: 500, height: 450, x: 475, y: 275 },
+  10: { character: "hanuman", pose: "flying", width: 600, height: 470, x: 420, y: 245 },
+  11: { character: "hanuman", pose: "victory", width: 430, height: 450, x: 500, y: 280 },
+  12: { character: "hanuman", pose: "running", width: 500, height: 450, x: 475, y: 275 },
+  13: { character: "hanuman", pose: "flying", width: 600, height: 470, x: 420, y: 245 },
+  14: { character: "hanuman", pose: "flying", width: 600, height: 470, x: 420, y: 245 },
+  15: { character: "hanuman", pose: "running-back", width: 470, height: 450, x: 490, y: 275 },
+  16: { character: "hanuman", pose: "running", width: 500, height: 450, x: 475, y: 275 },
+  17: { character: "hanuman", pose: "victory", width: 430, height: 450, x: 500, y: 280 },
+  18: { character: "hanuman", pose: "standing", width: 390, height: 440, x: 525, y: 280 },
+  19: { character: "hanuman", pose: "running", width: 500, height: 450, x: 475, y: 275 },
+  20: { character: "ram", pose: "archer", width: 460, height: 440, x: 490, y: 280 },
+  21: { character: "ram", pose: "archer", width: 460, height: 440, x: 490, y: 280 },
+  22: { character: "hanuman", pose: "flying", width: 600, height: 470, x: 420, y: 245 },
+  23: { character: "hanuman", pose: "running", width: 500, height: 450, x: 475, y: 275 },
+  24: { character: "hanuman", pose: "running-back", width: 470, height: 450, x: 490, y: 275 },
+  25: { character: "hanuman", pose: "prayer", width: 440, height: 420, x: 500, y: 300 },
+  26: { character: "hanuman", pose: "victory", width: 430, height: 450, x: 500, y: 280 },
+  27: { character: "hanuman", pose: "standing", width: 390, height: 440, x: 525, y: 280 },
+  28: { character: "hanuman", pose: "prayer", width: 440, height: 420, x: 500, y: 300 },
+  29: { character: "hanuman", pose: "standing", width: 390, height: 440, x: 525, y: 280 },
+  30: { character: "hanuman", pose: "victory", width: 430, height: 450, x: 500, y: 280 },
+  31: { character: "hanuman", pose: "prayer", width: 440, height: 420, x: 500, y: 300 },
+  32: { character: "ram", pose: "standing", width: 310, height: 510, x: 570, y: 250 },
+  33: { character: "hanuman", pose: "prayer", width: 440, height: 420, x: 500, y: 300 },
+  34: { character: "hanuman", pose: "standing", width: 390, height: 440, x: 525, y: 280 },
+  35: { character: "hanuman", pose: "victory", width: 430, height: 450, x: 500, y: 280 },
+  36: { character: "hanuman", pose: "standing", width: 390, height: 440, x: 525, y: 280 },
+  37: { character: "hanuman", pose: "prayer", width: 440, height: 420, x: 500, y: 300 },
+  38: { character: "hanuman", pose: "standing", width: 390, height: 440, x: 525, y: 280 },
+  39: { character: "hanuman", pose: "prayer", width: 440, height: 420, x: 500, y: 300 },
+  40: { character: "hanuman", pose: "standing", width: 390, height: 440, x: 525, y: 280 },
+  41: { character: "hanuman", pose: "victory", width: 430, height: 450, x: 500, y: 280 },
+  42: { character: "hanuman", pose: "prayer", width: 440, height: 420, x: 500, y: 300 },
+};
+
+function CharacterPose({ index, paused }: { index: number; paused: boolean }) {
+  const pose = poseByVerse[index] ?? poseByVerse[0];
+  const asset = `/images/visual/${pose.character}-${pose.pose}.webp`;
+  return <motion.image
+    key={asset}
+    href={asset}
+    x={pose.x}
+    y={pose.y}
+    width={pose.width}
+    height={pose.height}
+    preserveAspectRatio="xMidYMid meet"
+    initial={{ opacity: 0, y: pose.y + 18 }}
+    animate={paused ? { opacity: 1, y: pose.y } : { opacity: 1, y: [pose.y, pose.y - 8, pose.y] }}
+    transition={{ opacity: { duration: 0.45 }, y: { duration: 4.6, repeat: paused ? 0 : Infinity, ease: "easeInOut" } }}
+    style={{ filter: "drop-shadow(0 18px 18px rgba(111, 69, 38, .12))" }}
+  />;
 }
 
 function IllustratedWorld({ index, paused }: { index: number; paused: boolean }) {
@@ -111,7 +107,7 @@ function IllustratedWorld({ index, paused }: { index: number; paused: boolean })
     {chapter.world === "temple" && <g fill="#d99a61" opacity=".38"><path d="M70 760 V625 H135 V575 H170 V625 H235 V760Z" /><path d="M45 625 L152 550 L260 625Z" /><path d="M1180 760 V630 H1240 V580 H1275 V630 H1340 V760Z" /><path d="M1150 630 L1260 555 L1370 630Z" /></g>}
     {chapter.world === "ocean" && <g fill="none" stroke="#76bdc8" strokeWidth="8" opacity=".5"><path d="M0 665 Q90 635 180 665 T360 665 T540 665 T720 665 T900 665 T1080 665 T1260 665 T1440 665" /><path d="M0 720 Q90 690 180 720 T360 720 T540 720 T720 720 T900 720 T1080 720 T1260 720 T1440 720" /></g>}
     {chapter.world === "forest" && <g fill="#4c9b7f" opacity=".4">{Array.from({ length: 10 }, (_, i) => <path key={i} d={`M${i * 155 - 20} 780 l55 -160 l55 160Z`} />)}</g>}
-    <motion.g animate={paused ? { x: 0 } : { x: [-5, 5, -5] }} transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}><FlyingHanuman paused={paused} /></motion.g>
+    <CharacterPose index={index} paused={paused} />
     <g fill="#f4a34e" opacity=".9"><circle cx="500" cy="280" r="7" /><circle cx="965" cy="270" r="5" /><circle cx="1050" cy="520" r="7" /><circle cx="350" cy="480" r="5" /></g>
     <g fill="none" stroke="#fff" strokeWidth="5" strokeLinecap="round" opacity=".8"><path d="M235 405 Q310 450 374 400 Q340 465 260 460" /><path d="M980 560 Q1055 500 1100 525 Q1060 565 1030 585" /></g>
     <path d="M0 785 Q200 730 400 790 T800 780 T1200 770 T1440 790 V900 H0Z" fill="#e6a2a0" opacity=".52" />
