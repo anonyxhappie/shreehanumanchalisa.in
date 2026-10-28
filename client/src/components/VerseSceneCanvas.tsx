@@ -31,7 +31,7 @@ function roundedRect(ctx: CanvasRenderingContext2D, x: number, y: number, w: num
 export default function VerseSceneCanvas({ verseIndex, verseLabel, reducedMotion = false }: Props) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const hostRef = useRef<HTMLDivElement | null>(null);
-  const scene = scenes[Math.min(Math.max(verseIndex, 0), scenes.length - 1)];
+  const scene = scenes[((verseIndex % scenes.length) + scenes.length) % scenes.length];
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -250,8 +250,8 @@ export default function VerseSceneCanvas({ verseIndex, verseLabel, reducedMotion
     <div ref={hostRef} className="verse-scene relative isolate my-6 overflow-hidden rounded-2xl border border-[#b88a62]/45 shadow-[0_18px_48px_rgba(53,35,24,0.18)]" role="img" aria-label={`Animated illustration for verse ${verseLabel}: ${scene.title}. ${scene.subtitle}`}>
       <canvas ref={canvasRef} className="block w-full" style={{ aspectRatio: "16 / 9" }} aria-hidden="true" />
       <div className="pointer-events-none absolute inset-x-0 bottom-0 flex items-center justify-between bg-gradient-to-t from-[#172733]/80 via-[#172733]/30 to-transparent px-5 pb-4 pt-12 text-[#fff1d7]">
-        <span className="text-[10px] font-semibold uppercase tracking-[0.2em] opacity-80">Living illustration · {verseLabel}</span>
-        <span className="text-xs opacity-80">Procedural canvas</span>
+        <span className="text-[10px] font-semibold uppercase tracking-[0.2em] opacity-80">Verse {verseLabel}</span>
+        <span className="text-xs opacity-80">Scroll scene</span>
       </div>
     </div>
   );
