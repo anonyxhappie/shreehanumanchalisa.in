@@ -54,13 +54,13 @@ function CharacterArt({ character, action, paused }: { character: Character; act
   const floatTransition = { duration: 3.8, repeat: still ? 0 : Infinity, ease: "easeInOut" as const };
   return <motion.g initial={false} animate={{ ...float, rotate: flying ? -9 : running ? -4 : [0, 1, 0] }} transition={floatTransition}>
     {/* Tail is a simple stroke, not a baked image; its shape belongs to the character. */}
-    {isHanuman && <motion.path d={flying ? "M135 236 C220 235 230 150 183 126 C153 110 132 131 149 149" : "M135 240 C205 257 222 202 191 178 C170 162 153 178 169 191"} fill="none" stroke={INK} strokeWidth="13" strokeLinecap="round" animate={still ? {} : { rotate: [-2, 3, -2] }} style={{ transformOrigin: "135px 236px", transformBox: "view-box" }} transition={{ duration: 3, repeat: still ? 0 : Infinity, ease: "easeInOut" }} />}
+    {isHanuman && <path d={flying ? "M135 236 C220 235 230 150 183 126 C153 110 132 131 149 149" : "M135 240 C205 257 222 202 191 178 C170 162 153 178 169 191"} fill="none" stroke={INK} strokeWidth="13" strokeLinecap="round" />}
     {/* Legs pivot at the hips, with a deliberately limited one-ink silhouette. */}
-    <motion.g style={{ transformOrigin: "145px 260px", transformBox: "view-box" }} animate={running || flying ? { rotate: [-17, 17, -17] } : { rotate: 0 }} transition={{ duration: running ? .72 : 1.6, repeat: running && !still ? Infinity : 0, ease: "easeInOut" }}>
+    <motion.g  animate={{ rotate: 0 }} transition={{ duration: .2 }}>
       <path d="M126 246 Q111 275 99 304 L82 321" fill="none" stroke={INK} strokeWidth="24" strokeLinecap="round" strokeLinejoin="round" />
       <path d="M82 321 Q66 328 52 319" fill="none" stroke={INK} strokeWidth="17" strokeLinecap="round" />
     </motion.g>
-    <motion.g style={{ transformOrigin: "165px 260px", transformBox: "view-box" }} animate={running || flying ? { rotate: [18, -16, 18] } : { rotate: 0 }} transition={{ duration: running ? .72 : 1.6, repeat: running && !still ? Infinity : 0, ease: "easeInOut" }}>
+    <motion.g  animate={{ rotate: 0 }} transition={{ duration: .2 }}>
       <path d="M165 247 Q184 274 197 302 L217 315" fill="none" stroke={INK} strokeWidth="24" strokeLinecap="round" strokeLinejoin="round" />
       <path d="M217 315 Q232 324 244 313" fill="none" stroke={INK} strokeWidth="17" strokeLinecap="round" />
     </motion.g>
@@ -72,11 +72,11 @@ function CharacterArt({ character, action, paused }: { character: Character; act
     <path d="M119 149 Q145 174 171 149" fill="none" stroke="#f7f3e9" strokeWidth="3.5" strokeLinecap="round" opacity=".8" />
     <path d="M125 159 Q145 188 165 159 L145 201Z" fill="none" stroke="#f7f3e9" strokeWidth="3" opacity=".8" />
     {/* Arms are separate moving groups so the same drawing can pray, fly or celebrate. */}
-    <motion.g style={{ transformOrigin: "118px 151px", transformBox: "view-box" }} animate={praying ? { rotate: -28 } : flying ? { rotate: -48 } : victorious ? { rotate: -62 } : archer ? { rotate: -18 } : running ? { rotate: [-36, 32, -36] } : { rotate: -8 }} transition={{ duration: running ? .72 : .55, repeat: running && !still ? Infinity : 0, ease: "easeInOut" }}>
+    <motion.g  animate={{ rotate: praying ? -18 : flying ? -24 : victorious ? -32 : archer ? -12 : -8 }} transition={{ duration: .25 }}>
       <path d="M119 151 Q96 163 83 143 L74 119" fill="none" stroke={INK} strokeWidth="20" strokeLinecap="round" strokeLinejoin="round" />
       <circle cx="74" cy="117" r="10" fill={INK} />
     </motion.g>
-    <motion.g style={{ transformOrigin: "176px 151px", transformBox: "view-box" }} animate={praying ? { rotate: 28 } : flying ? { rotate: 45 } : victorious ? { rotate: 45 } : archer ? { rotate: 62 } : running ? { rotate: [30, -35, 30] } : { rotate: 8 }} transition={{ duration: running ? .72 : .55, repeat: running && !still ? Infinity : 0, ease: "easeInOut" }}>
+    <motion.g  animate={{ rotate: praying ? 18 : flying ? 24 : victorious ? 45 : archer ? 42 : 8 }} transition={{ duration: .25 }}>
       <path d="M176 151 Q199 163 211 143 L221 119" fill="none" stroke={INK} strokeWidth="20" strokeLinecap="round" strokeLinejoin="round" />
       <circle cx="221" cy="117" r="10" fill={INK} />
     </motion.g>
@@ -91,7 +91,7 @@ function CharacterArt({ character, action, paused }: { character: Character; act
     <path d="M112 54 L108 29 L125 40 L136 12 L147 37 L160 10 L169 40 L184 29 L179 55 Q145 65 112 54Z" fill={INK} />
     <path d="M119 49 Q145 38 174 49" fill="none" stroke="#f7f3e9" strokeWidth="3" opacity=".8" />
     {/* Gada for Hanuman; bow for Rama. Both are simple strokes and can be animated independently. */}
-    {isHanuman && <motion.g style={{ transformOrigin: "225px 153px", transformBox: "view-box" }} animate={victorious ? { rotate: -28 } : flying ? { rotate: -22 } : { rotate: 0 }} transition={{ duration: .6 }}>
+    {isHanuman && <motion.g  animate={{ rotate: victorious ? -18 : flying ? -12 : 0 }} transition={{ duration: .25 }}>
       <path d="M226 110 L245 202" stroke={INK} strokeWidth="9" strokeLinecap="round" />
       <path d="M224 105 Q243 89 257 106 L260 121 Q247 134 230 123Z" fill={INK} />
       <path d="M234 202 L245 213 L256 207" fill="none" stroke={INK} strokeWidth="5" strokeLinecap="round" />
@@ -115,7 +115,7 @@ function IllustratedWorld({ scene, paused }: { scene: Scene; paused: boolean }) 
     {/* Keep the SVG world transform on a native group. Framer Motion's CSS transform
         must not replace the SVG translate/scale and throw the character into the top-left. */}
     <g transform="translate(555 245) scale(1.12)">
-      <motion.g animate={scene.action === "fly" && !paused ? { x: [0, 10, 0], y: [0, -12, 0] } : { x: 0, y: 0 }} transition={{ duration: 5, repeat: paused ? 0 : Infinity, ease: "easeInOut" }}>
+      <motion.g key={scene.character + scene.action} initial={{ opacity: 0 }} animate={{ opacity: 1, y: !paused ? [0, scene.action === "fly" ? -7 : -3, 0] : 0 }} transition={{ opacity: { duration: .3 }, y: { duration: scene.action === "fly" ? 4.5 : 6, repeat: paused ? 0 : Infinity, ease: "easeInOut" } }}>
         <CharacterArt character={scene.character} action={scene.action} paused={paused} />
       </motion.g>
     </g>
