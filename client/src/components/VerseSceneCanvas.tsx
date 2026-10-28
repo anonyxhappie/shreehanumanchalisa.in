@@ -72,6 +72,13 @@ export default function VerseSceneCanvas({ verseIndex, verseLabel, totalVerses, 
       ctx.save();
       ctx.translate(cx, cy);
       ctx.scale(scale, scale);
+      const silhouetteGlow = ctx.createRadialGradient(0, -18, 4, 0, -18, 82);
+      silhouetteGlow.addColorStop(0, "rgba(255, 205, 121, .22)");
+      silhouetteGlow.addColorStop(1, "rgba(255, 205, 121, 0)");
+      ctx.fillStyle = silhouetteGlow;
+      ctx.beginPath();
+      ctx.arc(0, -18, 82, 0, Math.PI * 2);
+      ctx.fill();
       ctx.fillStyle = "rgba(55, 31, 26, .94)";
       ctx.strokeStyle = "rgba(55, 31, 26, .94)";
       ctx.lineWidth = 11;
@@ -80,8 +87,9 @@ export default function VerseSceneCanvas({ verseIndex, verseLabel, totalVerses, 
       // Tail, head, torso and gada are deliberately symbolic procedural shapes.
       ctx.beginPath();
       ctx.moveTo(-5, 30);
-      ctx.bezierCurveTo(-63, 15, -71, -34, -43, -54);
-      ctx.bezierCurveTo(-17, -73, 3, -53, -9, -39);
+      const tailSway = reduced ? 0 : Math.sin(time * 0.0015) * 7;
+      ctx.bezierCurveTo(-63, 15 + tailSway, -71 - tailSway, -34, -43, -54);
+      ctx.bezierCurveTo(-17, -73, 3 + tailSway, -53, -9, -39);
       ctx.stroke();
       ctx.beginPath();
       ctx.ellipse(0, 11, 32, 43, -0.08, 0, Math.PI * 2);
@@ -224,6 +232,13 @@ export default function VerseSceneCanvas({ verseIndex, verseLabel, totalVerses, 
       vignette.addColorStop(1, "rgba(9, 19, 27, .54)");
       ctx.fillStyle = vignette;
       ctx.fillRect(0, 0, w, h);
+
+      // Reveal each new verse with a short, soft cinematic fade rather than a hard cut.
+      const reveal = reduced ? 1 : Math.min(1, (now - start) / 900);
+      if (reveal < 1) {
+        ctx.fillStyle = `rgba(10, 20, 29, ${(1 - reveal) * 0.34})`;
+        ctx.fillRect(0, 0, w, h);
+      }
 
       const margin = Math.max(22, w * 0.065);
       const textWidth = Math.min(w * 0.43, 250);
