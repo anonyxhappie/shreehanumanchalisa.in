@@ -7,8 +7,9 @@ import { ThemeProvider } from "./contexts/ThemeContext";
 import Home from "./pages/Home";
 import NotFound from "./pages/NotFound";
 import Temples from "./pages/Temples";
+import VisualExperience from "./pages/VisualExperience";
 function Router() {
-  return <Switch><Route path="/" component={Home} /><Route path="/temples" component={Temples} /><Route path="/404" component={NotFound} /><Route component={NotFound} /></Switch>;
+  return <Switch><Route path="/" component={Home} /><Route path="/visual" component={VisualExperience} /><Route path="/temples" component={Temples} /><Route path="/404" component={NotFound} /><Route component={NotFound} /></Switch>;
 }
 
 export default function App() {
