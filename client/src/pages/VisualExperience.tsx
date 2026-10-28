@@ -25,7 +25,7 @@ function Cloud({ x, y, scale = 1, color, delay = 0, paused }: { x: number; y: nu
   </motion.g>;
 }
 
-function FlyingHanuman() {
+function FallbackHanuman() {
   return <motion.g initial={false} animate={{ y: [0, -10, 0], rotate: [-1, 1.2, -1] }} transition={{ duration: 4.8, repeat: Infinity, ease: "easeInOut" }}><g transform="translate(720 435)">
     {/* Tail: a long, expressive silhouette behind the body */}
     <motion.path d="M-145 35 C-255 18 -246 -95 -165 -165 C-110 -213 -54 -181 -88 -143" fill="none" stroke="#a94b2b" strokeWidth="31" strokeLinecap="round" animate={{ d: ["M-145 35 C-255 18 -246 -95 -165 -165 C-110 -213 -54 -181 -88 -143", "M-145 35 C-249 4 -238 -103 -158 -166 C-103 -210 -53 -176 -87 -143", "M-145 35 C-255 18 -246 -95 -165 -165 C-110 -213 -54 -181 -88 -143"] }} transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }} />
@@ -211,7 +211,7 @@ function CharacterPose({ index, paused }: { index: number; paused: boolean }) {
   const [assetMissing, setAssetMissing] = useState(false);
   const pose = poseByVerse[index] ?? poseByVerse[0];
   const asset = `/images/visual/${pose.character}-${pose.pose}.webp`;
-  if (assetMissing) return <FallbackHanuman paused={paused} />;
+  if (assetMissing) return <FallbackHanuman />;
   return <motion.image
     key={asset}
     href={asset}
