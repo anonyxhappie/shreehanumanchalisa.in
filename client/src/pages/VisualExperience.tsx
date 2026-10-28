@@ -73,12 +73,12 @@ function CharacterArt({ character, action, paused }: { character: Character; act
     <path d="M125 159 Q145 188 165 159 L145 201Z" fill="none" stroke="#f7f3e9" strokeWidth="3" opacity=".8" />
     {/* Arms are separate moving groups so the same drawing can pray, fly or celebrate. */}
     <g>
-      <path d="M119 151 Q96 163 83 143 L74 119" fill="none" stroke={INK} strokeWidth="20" strokeLinecap="round" strokeLinejoin="round" />
-      <circle cx="74" cy="117" r="10" fill={INK} />
+      <path d={praying ? "M119 151 Q128 145 137 133 L145 126" : flying ? "M119 151 Q94 137 78 116 L65 101" : victorious ? "M119 151 Q103 130 98 106 L94 87" : archer ? "M119 151 Q101 142 91 130 L82 119" : "M119 151 Q96 163 83 143 L74 119"} fill="none" stroke={INK} strokeWidth="20" strokeLinecap="round" strokeLinejoin="round" />
+      <circle cx={praying ? 145 : flying ? 65 : victorious ? 94 : archer ? 82 : 74} cy={praying ? 126 : flying ? 101 : victorious ? 87 : archer ? 119 : 117} r="10" fill={INK} />
     </g>
     <g>
-      <path d="M176 151 Q199 163 211 143 L221 119" fill="none" stroke={INK} strokeWidth="20" strokeLinecap="round" strokeLinejoin="round" />
-      <circle cx="221" cy="117" r="10" fill={INK} />
+      <path d={praying ? "M176 151 Q164 145 153 133 L145 126" : flying ? "M176 151 Q199 128 218 105 L230 87" : victorious ? "M176 151 Q193 130 202 104 L210 83" : archer ? "M176 151 Q198 147 214 145 L232 145" : "M176 151 Q199 163 211 143 L221 119"} fill="none" stroke={INK} strokeWidth="20" strokeLinecap="round" strokeLinejoin="round" />
+      <circle cx={praying ? 145 : flying ? 230 : victorious ? 210 : archer ? 232 : 221} cy={praying ? 126 : flying ? 87 : victorious ? 83 : archer ? 145 : 117} r="10" fill={INK} />
     </g>
     {/* Prayer hands overlap at the chest; the pose remains readable at small sizes. */}
     {praying && <g stroke={INK} strokeWidth="9" strokeLinecap="round"><path d="M135 150 L145 126 L153 150" fill="none" /><path d="M145 126 L145 151" /></g>}
