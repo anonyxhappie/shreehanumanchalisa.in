@@ -5,7 +5,9 @@ type SceneKind = "invocation" | "wisdom" | "hanuman" | "messenger" | "strength" 
 type Props = {
   verseIndex: number;
   verseLabel: string;
+  totalVerses: number;
   reducedMotion?: boolean;
+  onNavigate: (nextIndex: number) => void;
 };
 
 const scenes: Array<{ kind: SceneKind; title: string; subtitle: string }> = [
@@ -28,7 +30,7 @@ function roundedRect(ctx: CanvasRenderingContext2D, x: number, y: number, w: num
   ctx.closePath();
 }
 
-export default function VerseSceneCanvas({ verseIndex, verseLabel, reducedMotion = false }: Props) {
+export default function VerseSceneCanvas({ verseIndex, verseLabel, totalVerses, reducedMotion = false, onNavigate }: Props) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const hostRef = useRef<HTMLDivElement | null>(null);
   const scene = scenes[((verseIndex % scenes.length) + scenes.length) % scenes.length];
@@ -142,7 +144,36 @@ export default function VerseSceneCanvas({ verseIndex, verseLabel, reducedMotion
         ctx.arc(0, 0, sunRadius * (0.6 + i * 0.19) + (reduced ? 0 : Math.sin(t * 0.6 + i) * 2), 0, Math.PI * 2);
         ctx.stroke();
       }
+      // Slowly rotating rays add depth to the halo.
+      if (!reduced) {
+        ctx.save();
+        ctx.translate(sunX, sunY);
+        ctx.rotate(t * 0.035);
+        for (let ray = 0; ray < 18; ray++) {
+          ctx.rotate((Math.PI * 2) / 18);
+          ctx.strokeStyle = "rgba(255, 224, 166, .12)";
+          ctx.lineWidth = ray % 3 === 0 ? 1.4 : 0.7;
+          ctx.beginPath();
+          ctx.moveTo(sunRadius * 0.78, 0);
+          ctx.lineTo(sunRadius * (1.28 + (ray % 2) * 0.14), 0);
+          ctx.stroke();
+        }
+        ctx.restore();
+      }
+
       ctx.restore();
+
+      // Slow cloud veils create atmospheric parallax.
+      for (let cloud = 0; cloud < 4; cloud++) {
+        const drift = reduced ? 0 : t * (4 + cloud * 1.7);
+        const x = ((cloud * w * 0.37 + drift) % (w + 180)) - 90;
+        const y = h * (0.24 + cloud * 0.075);
+        ctx.fillStyle = "rgba(255, 207, 155, .045)";
+        ctx.beginPath();
+        ctx.ellipse(x, y, w * 0.15, h * 0.035, 0, 0, Math.PI * 2);
+        ctx.ellipse(x + 24, y + 3, w * 0.1, h * 0.025, 0, 0, Math.PI * 2);
+        ctx.fill();
+      }
 
       ctx.fillStyle = "rgba(25, 39, 48, .78)";
       ctx.beginPath();
@@ -176,7 +207,7 @@ export default function VerseSceneCanvas({ verseIndex, verseLabel, reducedMotion
         drawHanumanSilhouette(now);
       }
 
-      for (let i = 0; i < 38; i++) {
+      for (let i = 0; i < 58; i++) {
         const phase = i * 2.399;
         const drift = reduced ? 0 : t * (7 + (i % 4) * 2);
         const x = ((Math.sin(phase) * 0.5 + 0.5) * w + drift * (i % 2 ? 1 : -1) + w) % w;
@@ -249,9 +280,23 @@ export default function VerseSceneCanvas({ verseIndex, verseLabel, reducedMotion
   return (
     <div ref={hostRef} className="verse-scene relative isolate my-6 overflow-hidden rounded-2xl border border-[#b88a62]/45 shadow-[0_18px_48px_rgba(53,35,24,0.18)]" role="img" aria-label={`Animated illustration for verse ${verseLabel}: ${scene.title}. ${scene.subtitle}`}>
       <canvas ref={canvasRef} className="block w-full" style={{ aspectRatio: "16 / 9" }} aria-hidden="true" />
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 flex items-center justify-between bg-gradient-to-t from-[#172733]/80 via-[#172733]/30 to-transparent px-5 pb-4 pt-12 text-[#fff1d7]">
-        <span className="text-[10px] font-semibold uppercase tracking-[0.2em] opacity-80">Verse {verseLabel}</span>
-        <span className="text-xs opacity-80">Scroll scene</span>
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-[#172733]/95 via-[#172733]/65 to-transparent px-4 pb-3 pt-12 text-[#fff1d7] sm:px-5 sm:pb-4">
+        <div className="mb-3 flex items-center justify-between gap-3">
+          <span className="text-[10px] font-semibold uppercase tracking-[0.18em] opacity-80">Verse {verseLabel} of {totalVerses}</span>
+          <span className="text-[10px] opacity-70">Scroll or navigate</span>
+        </div>
+        <div className="mb-3 h-1 overflow-hidden rounded-full bg-white/20">
+          <div className="h-full rounded-full bg-[#f4c47e] transition-[width] duration-500" style={{ width: `${((verseIndex + 1) / Math.max(totalVerses, 1)) * 100}%` }} />
+        </div>
+        <div className="pointer-events-auto flex items-center justify-between gap-3">
+          <button type="button" onClick={() => onNavigate(Math.max(0, verseIndex - 1))} disabled={verseIndex <= 0} aria-label="Previous verse scene" className="inline-flex items-center gap-2 rounded-full border border-white/30 bg-[#172733]/65 px-3 py-2 text-xs font-semibold text-[#fff1d7] backdrop-blur-sm transition hover:border-[#f4c47e] hover:bg-[#31424a] disabled:cursor-not-allowed disabled:opacity-35">
+            <span aria-hidden="true">←</span><span>Previous</span>
+          </button>
+          <span className="text-[10px] tracking-[0.18em] text-[#f4d6a8]/80">{String(verseIndex + 1).padStart(2, "0")} / {String(totalVerses).padStart(2, "0")}</span>
+          <button type="button" onClick={() => onNavigate(Math.min(totalVerses - 1, verseIndex + 1))} disabled={verseIndex >= totalVerses - 1} aria-label="Next verse scene" className="inline-flex items-center gap-2 rounded-full border border-[#f4c47e]/55 bg-[#d96b2b]/90 px-3 py-2 text-xs font-semibold text-white shadow-lg transition hover:bg-[#e47c3a] disabled:cursor-not-allowed disabled:opacity-35">
+            <span>Next</span><span aria-hidden="true">→</span>
+          </button>
+        </div>
       </div>
     </div>
   );
