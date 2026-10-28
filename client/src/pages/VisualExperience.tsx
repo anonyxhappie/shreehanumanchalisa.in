@@ -211,6 +211,7 @@ function CharacterPose({ index, paused }: { index: number; paused: boolean }) {
   const [assetMissing, setAssetMissing] = useState(false);
   const pose = poseByVerse[index] ?? poseByVerse[0];
   const asset = `/images/visual/${pose.character}-${pose.pose}.webp`;
+  useEffect(() => { setAssetMissing(false); }, [asset]);
   if (assetMissing) return <FallbackHanuman />;
   return <motion.image
     key={asset}
