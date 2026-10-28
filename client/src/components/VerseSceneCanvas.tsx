@@ -39,7 +39,8 @@ export default function VerseSceneCanvas({ verseIndex, verseLabel, reducedMotion
     const ctx = canvas?.getContext("2d", { alpha: false });
     if (!canvas || !host || !ctx) return;
 
-    const reduced = reducedMotion || window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const motionPreference = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const reduced = reducedMotion || motionPreference.matches;
     let width = 0;
     let height = 0;
     let dpr = 1;
@@ -230,9 +231,15 @@ export default function VerseSceneCanvas({ verseIndex, verseLabel, reducedMotion
 
     resize();
     if (!reduced) raf = window.requestAnimationFrame(tick);
+    const onMotionChange = () => {
+      if (motionPreference.matches && raf) { window.cancelAnimationFrame(raf); raf = 0; paint(performance.now()); }
+      else if (!motionPreference.matches && visible && !raf) { start = performance.now(); raf = window.requestAnimationFrame(tick); }
+    };
+    motionPreference.addEventListener("change", onMotionChange);
     return () => {
       resizeObserver.disconnect();
       intersectionObserver.disconnect();
+      motionPreference.removeEventListener("change", onMotionChange);
       if (raf) window.cancelAnimationFrame(raf);
     };
   }, [verseIndex, reducedMotion, scene.kind, scene.title, scene.subtitle]);
