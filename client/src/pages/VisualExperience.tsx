@@ -52,7 +52,7 @@ function CharacterArt({ character, action, paused }: { character: Character; act
   const archer = action === "archer";
   const float = still ? {} : { y: [0, -7, 0] };
   const floatTransition = { duration: 3.8, repeat: still ? 0 : Infinity, ease: "easeInOut" as const };
-  return <motion.g initial={false} animate={{ ...float, rotate: flying ? -9 : running ? -4 : [0, 1, 0] }} transition={floatTransition}>
+  return <motion.g initial={false} animate={float} transition={floatTransition}>
     {/* Tail is a simple stroke, not a baked image; its shape belongs to the character. */}
     {isHanuman && <path d={flying ? "M135 236 C220 235 230 150 183 126 C153 110 132 131 149 149" : "M135 240 C205 257 222 202 191 178 C170 162 153 178 169 191"} fill="none" stroke={INK} strokeWidth="13" strokeLinecap="round" />}
     {/* Legs pivot at the hips, with a deliberately limited one-ink silhouette. */}
@@ -72,14 +72,14 @@ function CharacterArt({ character, action, paused }: { character: Character; act
     <path d="M119 149 Q145 174 171 149" fill="none" stroke="#f7f3e9" strokeWidth="3.5" strokeLinecap="round" opacity=".8" />
     <path d="M125 159 Q145 188 165 159 L145 201Z" fill="none" stroke="#f7f3e9" strokeWidth="3" opacity=".8" />
     {/* Arms are separate moving groups so the same drawing can pray, fly or celebrate. */}
-    <motion.g  animate={{ rotate: praying ? -18 : flying ? -24 : victorious ? -32 : archer ? -12 : -8 }} transition={{ duration: .25 }}>
+    <g>
       <path d="M119 151 Q96 163 83 143 L74 119" fill="none" stroke={INK} strokeWidth="20" strokeLinecap="round" strokeLinejoin="round" />
       <circle cx="74" cy="117" r="10" fill={INK} />
-    </motion.g>
-    <motion.g  animate={{ rotate: praying ? 18 : flying ? 24 : victorious ? 45 : archer ? 42 : 8 }} transition={{ duration: .25 }}>
+    </g>
+    <g>
       <path d="M176 151 Q199 163 211 143 L221 119" fill="none" stroke={INK} strokeWidth="20" strokeLinecap="round" strokeLinejoin="round" />
       <circle cx="221" cy="117" r="10" fill={INK} />
-    </motion.g>
+    </g>
     {/* Prayer hands overlap at the chest; the pose remains readable at small sizes. */}
     {praying && <g stroke={INK} strokeWidth="9" strokeLinecap="round"><path d="M135 150 L145 126 L153 150" fill="none" /><path d="M145 126 L145 151" /></g>}
     {/* Head, muzzle, tilak and crown. */}
@@ -91,11 +91,11 @@ function CharacterArt({ character, action, paused }: { character: Character; act
     <path d="M112 54 L108 29 L125 40 L136 12 L147 37 L160 10 L169 40 L184 29 L179 55 Q145 65 112 54Z" fill={INK} />
     <path d="M119 49 Q145 38 174 49" fill="none" stroke="#f7f3e9" strokeWidth="3" opacity=".8" />
     {/* Gada for Hanuman; bow for Rama. Both are simple strokes and can be animated independently. */}
-    {isHanuman && <motion.g  animate={{ rotate: victorious ? -18 : flying ? -12 : 0 }} transition={{ duration: .25 }}>
+    {isHanuman && <g>
       <path d="M226 110 L245 202" stroke={INK} strokeWidth="9" strokeLinecap="round" />
       <path d="M224 105 Q243 89 257 106 L260 121 Q247 134 230 123Z" fill={INK} />
       <path d="M234 202 L245 213 L256 207" fill="none" stroke={INK} strokeWidth="5" strokeLinecap="round" />
-    </motion.g>}
+    </g>}
     {archer && <g fill="none" stroke={INK} strokeWidth="5" strokeLinecap="round"><path d="M221 91 Q274 148 221 205" /><path d="M221 91 L221 205" /><path d="M205 148 L261 148" /></g>}
   </motion.g>;
 }
