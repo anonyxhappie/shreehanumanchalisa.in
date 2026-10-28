@@ -18,13 +18,15 @@ const chapters = [
 const chapterFor = (index: number) => chapters[index % chapters.length];
 
 function Cloud({ x, y, scale = 1, color, delay = 0, paused }: { x: number; y: number; scale?: number; color: string; delay?: number; paused: boolean }) {
-  return <motion.g initial={{ x }} animate={paused ? { x } : { x: [x, x + 20, x] }} transition={{ duration: 12 + delay, repeat: Infinity, ease: "easeInOut", delay }} transform={`translate(0 ${y}) scale(${scale})`} fill={color} opacity=".88">
-    <path d="M-100 34 C-112 7 -88 -12 -63 -5 C-47 -50 8 -51 31 -14 C61 -29 91 -10 91 19 C122 16 137 39 126 55 L-92 55 C-104 51 -107 42 -100 34Z" />
+  return <motion.g initial={{ x }} animate={paused ? { x } : { x: [x, x + 20, x] }} transition={{ duration: 12 + delay, repeat: Infinity, ease: "easeInOut", delay }} fill={color} opacity=".88">
+    <g transform={`translate(0 ${y}) scale(${scale})`}>
+      <path d="M-100 34 C-112 7 -88 -12 -63 -5 C-47 -50 8 -51 31 -14 C61 -29 91 -10 91 19 C122 16 137 39 126 55 L-92 55 C-104 51 -107 42 -100 34Z" />
+    </g>
   </motion.g>;
 }
 
 function FlyingHanuman({ paused }: { paused: boolean }) {
-  return <motion.g initial={false} animate={paused ? { y: 0, rotate: 0 } : { y: [0, -10, 0], rotate: [-1, 1.2, -1] }} transition={{ duration: 4.8, repeat: Infinity, ease: "easeInOut" }} transform="translate(720 435)">
+  return <motion.g initial={false} animate={paused ? { y: 0, rotate: 0 } : { y: [0, -10, 0], rotate: [-1, 1.2, -1] }} transition={{ duration: 4.8, repeat: Infinity, ease: "easeInOut" }}><g transform="translate(720 435)">
     {/* Tail: a long, expressive silhouette behind the body */}
     <motion.path d="M-145 35 C-255 18 -246 -95 -165 -165 C-110 -213 -54 -181 -88 -143" fill="none" stroke="#a94b2b" strokeWidth="31" strokeLinecap="round" animate={paused ? { d: "M-145 35 C-255 18 -246 -95 -165 -165 C-110 -213 -54 -181 -88 -143" } : { d: ["M-145 35 C-255 18 -246 -95 -165 -165 C-110 -213 -54 -181 -88 -143", "M-145 35 C-249 4 -238 -103 -158 -166 C-103 -210 -53 -176 -87 -143", "M-145 35 C-255 18 -246 -95 -165 -165 C-110 -213 -54 -181 -88 -143"] }} transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }} />
     <path d="M-155 24 C-251 5 -235 -93 -165 -151" fill="none" stroke="#e99b54" strokeWidth="14" strokeLinecap="round" />
@@ -88,7 +90,7 @@ function FlyingHanuman({ paused }: { paused: boolean }) {
     <path d="M-87 -24 L-72 -8 L-57 -24 L-72 -40Z" fill="#e7473d" stroke="#ffc83f" strokeWidth="6" />
     <path d="M-129 -21 L-113 -15 M-18 -48 L-4 -43" stroke="#ffc83f" strokeWidth="11" strokeLinecap="round" />
     <circle cx="-112" cy="0" r="10" fill="#ffca3f" /><circle cx="-4" cy="-17" r="10" fill="#ffca3f" />
-  </motion.g>;
+  </g></motion.g>;
 }
 
 function IllustratedWorld({ index, paused }: { index: number; paused: boolean }) {
