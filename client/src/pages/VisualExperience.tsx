@@ -17,16 +17,16 @@ const chapters = [
 
 const chapterFor = (index: number) => chapters[index % chapters.length];
 
-function Cloud({ x, y, scale = 1, color, delay = 0 }: { x: number; y: number; scale?: number; color: string; delay?: number }) {
-  return <motion.g initial={{ x }} animate={{ x: [x, x + 20, x] }} transition={{ duration: 12 + delay, repeat: Infinity, ease: "easeInOut", delay }} transform={`translate(0 ${y}) scale(${scale})`} fill={color} opacity=".88">
+function Cloud({ x, y, scale = 1, color, delay = 0, paused }: { x: number; y: number; scale?: number; color: string; delay?: number; paused: boolean }) {
+  return <motion.g initial={{ x }} animate={paused ? { x } : { x: [x, x + 20, x] }} transition={{ duration: 12 + delay, repeat: Infinity, ease: "easeInOut", delay }} transform={`translate(0 ${y}) scale(${scale})`} fill={color} opacity=".88">
     <path d="M-100 34 C-112 7 -88 -12 -63 -5 C-47 -50 8 -51 31 -14 C61 -29 91 -10 91 19 C122 16 137 39 126 55 L-92 55 C-104 51 -107 42 -100 34Z" />
   </motion.g>;
 }
 
-function FlyingHanuman() {
-  return <motion.g initial={false} animate={{ y: [0, -10, 0], rotate: [-1, 1.2, -1] }} transition={{ duration: 4.8, repeat: Infinity, ease: "easeInOut" }} transform="translate(720 435)">
+function FlyingHanuman({ paused }: { paused: boolean }) {
+  return <motion.g initial={false} animate={paused ? { y: 0, rotate: 0 } : { y: [0, -10, 0], rotate: [-1, 1.2, -1] }} transition={{ duration: 4.8, repeat: Infinity, ease: "easeInOut" }} transform="translate(720 435)">
     {/* Tail: a long, expressive silhouette behind the body */}
-    <motion.path d="M-145 35 C-255 18 -246 -95 -165 -165 C-110 -213 -54 -181 -88 -143" fill="none" stroke="#a94b2b" strokeWidth="31" strokeLinecap="round" animate={{ d: ["M-145 35 C-255 18 -246 -95 -165 -165 C-110 -213 -54 -181 -88 -143", "M-145 35 C-249 4 -238 -103 -158 -166 C-103 -210 -53 -176 -87 -143", "M-145 35 C-255 18 -246 -95 -165 -165 C-110 -213 -54 -181 -88 -143"] }} transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }} />
+    <motion.path d="M-145 35 C-255 18 -246 -95 -165 -165 C-110 -213 -54 -181 -88 -143" fill="none" stroke="#a94b2b" strokeWidth="31" strokeLinecap="round" animate={paused ? { d: "M-145 35 C-255 18 -246 -95 -165 -165 C-110 -213 -54 -181 -88 -143" } : { d: ["M-145 35 C-255 18 -246 -95 -165 -165 C-110 -213 -54 -181 -88 -143", "M-145 35 C-249 4 -238 -103 -158 -166 C-103 -210 -53 -176 -87 -143", "M-145 35 C-255 18 -246 -95 -165 -165 C-110 -213 -54 -181 -88 -143"] }} transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }} />
     <path d="M-155 24 C-251 5 -235 -93 -165 -151" fill="none" stroke="#e99b54" strokeWidth="14" strokeLinecap="round" />
     {/* rear arm and gada */}
     <path d="M-120 -4 L-226 62 L-293 104" fill="none" stroke="#c8753e" strokeWidth="40" strokeLinecap="round" strokeLinejoin="round" />
@@ -91,7 +91,7 @@ function FlyingHanuman() {
   </motion.g>;
 }
 
-function IllustratedWorld({ index }: { index: number }) {
+function IllustratedWorld({ index, paused }: { index: number; paused: boolean }) {
   const chapter = chapterFor(index);
   return <svg viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" className="absolute inset-0 h-full w-full" role="img" aria-label={`Animated devotional illustration: ${chapter.title}`}>
     <defs>
@@ -101,19 +101,19 @@ function IllustratedWorld({ index }: { index: number }) {
     </defs>
     <rect width="1440" height="900" fill="url(#sky)" />
     <circle cx="730" cy="330" r="255" fill="url(#halo)" />
-    <motion.circle cx="730" cy="330" r="170" fill="none" stroke="#fff8da" strokeWidth="2" opacity=".55" animate={{ r: [160, 190, 160], opacity: [.3, .65, .3] }} transition={{ duration: 6, repeat: Infinity }} />
-    <Cloud x={130} y={130} scale={1.2} color="#9fc6ee" delay={1} /><Cloud x={300} y={180} scale={.72} color="#ffc78f" delay={3} />
-    <Cloud x={1160} y={130} scale={1.05} color="#ffa88f" delay={2} /><Cloud x={1260} y={220} scale={.58} color="#8ecad9" delay={4} />
+    <motion.circle cx="730" cy="330" r="170" fill="none" stroke="#fff8da" strokeWidth="2" opacity=".55" animate={paused ? { r: 170, opacity: .45 } : { r: [160, 190, 160], opacity: [.3, .65, .3] }} transition={{ duration: 6, repeat: Infinity }} />
+    <Cloud x={130} y={130} scale={1.2} color="#9fc6ee" delay={1} paused={paused} /><Cloud x={300} y={180} scale={.72} color="#ffc78f" delay={3} paused={paused} />
+    <Cloud x={1160} y={130} scale={1.05} color="#ffa88f" delay={2} paused={paused} /><Cloud x={1260} y={220} scale={.58} color="#8ecad9" delay={4} paused={paused} />
     <path d="M0 555 Q230 490 430 560 T850 550 T1440 520 L1440 900 L0 900Z" fill="#fff5e7" opacity=".46" />
     {chapter.world === "mountain" && <g><path d="M0 700 L180 500 L300 625 L470 430 L630 660 L790 485 L1000 680 L1200 490 L1440 670 V900 H0Z" fill="#7cae9e" opacity=".55" /><path d="M380 534 L470 430 L550 555 L492 528 L470 548 L449 524Z" fill="#fff5e7" opacity=".9" /><path d="M1090 600 L1200 490 L1302 605 L1230 573 L1200 590 L1174 566Z" fill="#fff5e7" opacity=".9" /></g>}
     {chapter.world === "temple" && <g fill="#d99a61" opacity=".38"><path d="M70 760 V625 H135 V575 H170 V625 H235 V760Z" /><path d="M45 625 L152 550 L260 625Z" /><path d="M1180 760 V630 H1240 V580 H1275 V630 H1340 V760Z" /><path d="M1150 630 L1260 555 L1370 630Z" /></g>}
     {chapter.world === "ocean" && <g fill="none" stroke="#76bdc8" strokeWidth="8" opacity=".5"><path d="M0 665 Q90 635 180 665 T360 665 T540 665 T720 665 T900 665 T1080 665 T1260 665 T1440 665" /><path d="M0 720 Q90 690 180 720 T360 720 T540 720 T720 720 T900 720 T1080 720 T1260 720 T1440 720" /></g>}
     {chapter.world === "forest" && <g fill="#4c9b7f" opacity=".4">{Array.from({ length: 10 }, (_, i) => <path key={i} d={`M${i * 155 - 20} 780 l55 -160 l55 160Z`} />)}</g>}
-    <motion.g animate={{ x: [-5, 5, -5] }} transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}><FlyingHanuman /></motion.g>
+    <motion.g animate={paused ? { x: 0 } : { x: [-5, 5, -5] }} transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}><FlyingHanuman paused={paused} /></motion.g>
     <g fill="#f4a34e" opacity=".9"><circle cx="500" cy="280" r="7" /><circle cx="965" cy="270" r="5" /><circle cx="1050" cy="520" r="7" /><circle cx="350" cy="480" r="5" /></g>
     <g fill="none" stroke="#fff" strokeWidth="5" strokeLinecap="round" opacity=".8"><path d="M235 405 Q310 450 374 400 Q340 465 260 460" /><path d="M980 560 Q1055 500 1100 525 Q1060 565 1030 585" /></g>
     <path d="M0 785 Q200 730 400 790 T800 780 T1200 770 T1440 790 V900 H0Z" fill="#e6a2a0" opacity=".52" />
-    <Cloud x={70} y={780} scale={1.65} color="#83c8d6" delay={2} /><Cloud x={1240} y={800} scale={1.9} color="#ff9f9f" delay={1} />
+    <Cloud x={70} y={780} scale={1.65} color="#83c8d6" delay={2} paused={paused} /><Cloud x={1240} y={800} scale={1.9} color="#ff9f9f" delay={1} paused={paused} />
   </svg>;
 }
 
@@ -147,7 +147,7 @@ export default function VisualExperience() {
   return <main className="relative isolate min-h-screen overflow-clip bg-[#d9eeeb] text-[#34251e]">
     {/* One persistent illustrated SVG stage; only its verse-driven world changes. */}
     <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden" aria-hidden="false">
-      <div className="absolute inset-0" style={{ opacity: paused ? .92 : 1 }}><IllustratedWorld index={activeIndex} /></div>
+      <div className="absolute inset-0" style={{ opacity: paused ? .92 : 1 }}><IllustratedWorld index={activeIndex} paused={paused} /></div>
       <div className="absolute inset-0 bg-gradient-to-t from-[#f9d8c0]/55 via-transparent to-white/5" />
     </div>
 
