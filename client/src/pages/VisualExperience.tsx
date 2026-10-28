@@ -112,9 +112,13 @@ function IllustratedWorld({ scene, paused }: { scene: Scene; paused: boolean }) 
     {scene.world === "ocean" && <g fill="none" stroke={INK} strokeWidth="5" opacity=".15"><path d="M0 700 Q90 670 180 700 T360 700 T540 700 T720 700 T900 700 T1080 700 T1260 700 T1440 700" /><path d="M0 750 Q90 720 180 750 T360 750 T540 750 T720 750 T900 750 T1080 750 T1260 750 T1440 750" /></g>}
     {scene.world === "forest" && <g fill={INK} opacity=".12">{Array.from({ length: 11 }, (_, i) => <path key={i} d={`M${i * 145 - 25} 790 l58 -175 l58 175Z`} />)}</g>}
     <path d="M0 790 Q220 730 440 790 T880 785 T1320 780 L1440 800 V900 H0Z" fill={INK} opacity=".09" />
-    <motion.g key={scene.character + scene.action} transform={scene.action === "fly" ? "translate(560 175) scale(1.16)" : "translate(555 245) scale(1.12)"} animate={scene.action === "fly" && !paused ? { x: [0, 28, 0] } : { x: 0 }} transition={{ duration: 5, repeat: paused ? 0 : Infinity, ease: "easeInOut" }}>
-      <CharacterArt character={scene.character} action={scene.action} paused={paused} />
-    </motion.g>
+    {/* Keep the SVG world transform on a native group. Framer Motion's CSS transform
+        must not replace the SVG translate/scale and throw the character into the top-left. */}
+    <g transform={scene.action === "fly" ? "translate(555 205) scale(1.12)" : "translate(555 245) scale(1.12)"}>
+      <motion.g animate={scene.action === "fly" && !paused ? { x: [0, 10, 0], y: [0, -3, 0] } : { x: 0, y: 0 }} transition={{ duration: 5, repeat: paused ? 0 : Infinity, ease: "easeInOut" }}>
+        <CharacterArt character={scene.character} action={scene.action} paused={paused} />
+      </motion.g>
+    </g>
     <g fill={INK} opacity=".22"><circle cx="430" cy="355" r="4" /><circle cx="1010" cy="410" r="5" /><circle cx="960" cy="275" r="3" /></g>
   </svg>;
 }
@@ -131,13 +135,43 @@ export default function VisualExperience() {
   }, [reducedMotion]);
 
   useEffect(() => {
-    const observer = new IntersectionObserver((entries) => {
-      const visible = entries.filter((entry) => entry.isIntersecting).sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
-      if (!visible) return;
-      setActiveIndex(Number(visible.target.getAttribute("data-scene-index") ?? 0));
-    }, { threshold: [0.2, 0.4, 0.6, 0.8] });
+    // Choose the section whose centre is nearest the viewport centre. Observer callbacks
+    // only contain changed entries; choosing from that subset caused the story to jump
+    // backwards/forwards unpredictably during scroll.
+    const updateActiveSection = () => {
+      const viewportCentre = window.innerHeight / 2;
+      let closestIndex = 0;
+      let closestDistance = Number.POSITIVE_INFINITY;
+      sectionsRef.current.forEach((section, index) => {
+        if (!section) return;
+        const rect = section.getBoundingClientRect();
+        const distance = Math.abs((rect.top + rect.bottom) / 2 - viewportCentre);
+        if (distance < closestDistance) {
+          closestDistance = distance;
+          closestIndex = index;
+        }
+      });
+      setActiveIndex((previous) => previous === closestIndex ? previous : closestIndex);
+    };
+    let scheduled = false;
+    const onScroll = () => {
+      if (scheduled) return;
+      scheduled = true;
+      window.requestAnimationFrame(() => {
+        scheduled = false;
+        updateActiveSection();
+      });
+    };
+    const observer = new IntersectionObserver(updateActiveSection, { threshold: [0, 0.25, 0.5, 0.75, 1] });
     sectionsRef.current.forEach((section) => section && observer.observe(section));
-    return () => observer.disconnect();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    updateActiveSection();
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+    };
   }, []);
 
   const scene = sceneForVerse(activeIndex);
