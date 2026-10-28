@@ -293,7 +293,7 @@ export default function VerseSceneCanvas({ verseIndex, verseLabel, totalVerses, 
   }, [verseIndex, reducedMotion, scene.kind, scene.title, scene.subtitle]);
 
   return (
-    <div ref={hostRef} className="verse-scene relative isolate my-6 overflow-hidden rounded-2xl border border-[#b88a62]/45 shadow-[0_18px_48px_rgba(53,35,24,0.18)]" role="img" aria-label={`Animated illustration for verse ${verseLabel}: ${scene.title}. ${scene.subtitle}`}>
+    <div ref={hostRef} className="verse-scene relative isolate my-6 overflow-hidden rounded-2xl border border-[#b88a62]/45 shadow-[0_18px_48px_rgba(53,35,24,0.18)]" role="group" aria-label={`Animated scene for verse ${verseLabel}: ${scene.title}. ${scene.subtitle}`}>
       <canvas ref={canvasRef} className="block w-full" style={{ aspectRatio: "16 / 9" }} aria-hidden="true" />
       <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-[#172733]/95 via-[#172733]/65 to-transparent px-4 pb-3 pt-12 text-[#fff1d7] sm:px-5 sm:pb-4">
         <div className="mb-3 flex items-center justify-between gap-3">
