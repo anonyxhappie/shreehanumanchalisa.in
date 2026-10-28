@@ -251,6 +251,44 @@ function drawScene(
     ctx.fillStyle = "#f4d69b"; ctx.beginPath(); ctx.moveTo(0, -9); ctx.lineTo(8, 2); ctx.lineTo(0, 13); ctx.lineTo(-8, 2); ctx.closePath(); ctx.fill();
     ctx.restore();
   } else {
+    // Verse-specific story landmarks keep the presentation from repeating one generic character.
+    if (scene === 5) {
+      // The Sanjeevani mountain: layered ridges, tiny trees, and a living green-gold aura.
+      const mx = w * 0.28;
+      const my = h * 0.61;
+      const mountainGlow = ctx.createRadialGradient(mx, my, 2, mx, my, h * 0.3);
+      mountainGlow.addColorStop(0, "#b5c87b55");
+      mountainGlow.addColorStop(1, "#b5c87b00");
+      ctx.fillStyle = mountainGlow;
+      ctx.fillRect(mx - h * 0.3, my - h * 0.3, h * 0.6, h * 0.6);
+      ctx.fillStyle = "#27483e";
+      ctx.beginPath(); ctx.moveTo(mx - w * 0.2, my + h * 0.17); ctx.lineTo(mx - w * 0.14, my - h * 0.02); ctx.lineTo(mx - w * 0.08, my - h * 0.15); ctx.lineTo(mx - w * 0.025, my - h * 0.06); ctx.lineTo(mx + w * 0.045, my - h * 0.2); ctx.lineTo(mx + w * 0.16, my + h * 0.17); ctx.closePath(); ctx.fill();
+      ctx.fillStyle = "#6f9364";
+      for (let tree = 0; tree < 9; tree++) {
+        const tx = mx - w * 0.13 + tree * w * 0.03;
+        const ty = my + h * (tree % 3 === 0 ? -0.07 : tree % 2 === 0 ? 0.01 : -0.02);
+        ctx.fillRect(tx - 1.5, ty, 3, h * 0.055);
+        ctx.beginPath(); ctx.moveTo(tx, ty - h * 0.07); ctx.lineTo(tx - 8, ty + 3); ctx.lineTo(tx + 8, ty + 3); ctx.closePath(); ctx.fill();
+      }
+    }
+    if (scene === 6) {
+      // Rama's bow and a quiet royal silhouette create a distinct devotional tableau.
+      const rx = w * 0.27;
+      const ry = h * 0.65;
+      ctx.strokeStyle = "#d9b777";
+      ctx.lineWidth = 5;
+      ctx.beginPath(); ctx.moveTo(rx, ry - h * 0.24); ctx.quadraticCurveTo(rx + w * 0.1, ry, rx, ry + h * 0.17); ctx.stroke();
+      ctx.strokeStyle = "#f0d8a7aa";
+      ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.moveTo(rx, ry - h * 0.24); ctx.lineTo(rx + w * 0.012, ry + h * 0.17); ctx.stroke();
+      ctx.fillStyle = "#15222b";
+      ctx.beginPath(); ctx.ellipse(rx - w * 0.035, ry - h * 0.19, w * 0.025, h * 0.055, 0, 0, Math.PI * 2); ctx.fill();
+      ctx.fillRect(rx - w * 0.065, ry - h * 0.13, w * 0.06, h * 0.18);
+      ctx.strokeStyle = "#d9b777";
+      ctx.lineWidth = 3;
+      ctx.beginPath(); ctx.moveTo(rx - w * 0.015, ry - h * 0.1); ctx.lineTo(rx + w * 0.055, ry + h * 0.02); ctx.stroke();
+    }
+
     // Standing Hanuman with recognizable crown, expressive face, layered dhoti, jewellery and gada.
     ctx.save();
     ctx.translate(motifX, motifY);
@@ -262,6 +300,7 @@ function drawScene(
     const ink = "#111a22";
     const float = reduced ? 0 : Math.sin(drift * 0.82 + index) * 4;
     ctx.translate(0, float);
+    if (scene === 3) ctx.rotate(reduced ? -0.28 : -0.28 + Math.sin(drift * 0.6) * 0.025);
     // Tail with curled tip, behind the figure.
     ctx.strokeStyle = skin; ctx.lineWidth = 19; ctx.lineCap = "round";
     ctx.beginPath(); ctx.moveTo(-27, 77); ctx.bezierCurveTo(-133, 75, -146, -37, -91, -75); ctx.bezierCurveTo(-52, -105, -29, -78, -51, -61); ctx.stroke();
